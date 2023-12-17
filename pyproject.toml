@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "notebooks"
+version = "0.1.0"
+description = "Collection of jupyter notebooks"
+authors = ["Ivan Kyulev"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+numpy = "^1.26.2"
+pandas = "^2.1.4"
+yfinance = "^0.2.33"
+notebook = "^7.0.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

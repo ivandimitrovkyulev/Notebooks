@@ -220,6 +220,31 @@ webencodings = "*"
 css = ["tinycss2 (>=1.1.0,<1.3)"]
 
 [[package]]
+name = "bt"
+version = "1.0.0"
+description = "A flexible backtesting framework for Python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "bt-1.0.0-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:63cab816d063a6df806731f3aa414135c4862dbeb73f61ad747f0d93280d6d28"},
+    {file = "bt-1.0.0-cp310-cp310-win_amd64.whl", hash = "sha256:a4e0b73f851fb77cab3e312b4f97979590125639ab18abf95af18deb34e2aa09"},
+    {file = "bt-1.0.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:b1cc96605f3bcd8fb2c6597818c0cb687d27ddc597f2a0c67c2b528dde5dd8cc"},
+    {file = "bt-1.0.0-cp311-cp311-win_amd64.whl", hash = "sha256:754255272e25599b49d3d66851a3d08bf31ab914a8b80e3abc60d41cc6d5dfac"},
+    {file = "bt-1.0.0-cp38-cp38-macosx_11_0_x86_64.whl", hash = "sha256:29e5da2a5114e8436892801990b61dd2e28145ffd9aaa0d27777e110be242005"},
+    {file = "bt-1.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:d69682c34af72a81e5e3c1657e5a965d91f4a62c7189c8ee468cc95f89759a6f"},
+    {file = "bt-1.0.0-cp39-cp39-macosx_11_0_x86_64.whl", hash = "sha256:37956a0eaf5c290d9ff8eb6a8aeb8d13a3a1a5f67925a45ab06f9c15d05d9a0f"},
+    {file = "bt-1.0.0-cp39-cp39-win_amd64.whl", hash = "sha256:623d11b6fcb81e6801c851b1c2afc4be42ca38a6b1939efe685feadd68e40861"},
+    {file = "bt-1.0.0.tar.gz", hash = "sha256:94ba468ef470c3684a5e6e0eefd32edb85576ebb58ea6635b4d01b98be4eab15"},
+]
+
+[package.dependencies]
+ffn = ">=1.0.0"
+pyprind = ">=2.11"
+
+[package.extras]
+dev = ["cython (>=0.25)", "ffn (>=1.0.0)", "matplotlib (>=2)", "numpy (>=1)", "pandas (>=0.19)", "pyprind (>=2.11)", "pytest", "pytest-cov", "ruff"]
+
+[[package]]
 name = "certifi"
 version = "2024.2.2"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -575,6 +600,31 @@ files = [
 
 [package.extras]
 devel = ["colorama", "json-spec", "jsonschema", "pylint", "pytest", "pytest-benchmark", "pytest-cache", "validictory"]
+
+[[package]]
+name = "ffn"
+version = "1.0.1"
+description = "Financial functions for Python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "ffn-1.0.1.tar.gz", hash = "sha256:e2609e32cb9030a9afc77aaa96ab37757d21864f2e1be2842438a6ac12030714"},
+]
+
+[package.dependencies]
+decorator = ">=5.0.7"
+matplotlib = ">=1"
+numpy = ">=1.5"
+pandas = ">=0.19"
+pandas-datareader = ">=0.2"
+scikit-learn = ">=0.15"
+scipy = ">=0.15"
+tabulate = ">=0.7.5"
+yfinance = ">=0.2"
+
+[package.extras]
+dev = ["build", "pytest", "pytest-cov", "ruff", "wheel"]
+test = ["pytest", "pytest-cov"]
 
 [[package]]
 name = "fonttools"
@@ -1830,6 +1880,22 @@ test = ["hypothesis (>=6.46.1)", "pytest (>=7.3.2)", "pytest-xdist (>=2.2.0)"]
 xml = ["lxml (>=4.9.2)"]
 
 [[package]]
+name = "pandas-datareader"
+version = "0.10.0"
+description = "Data readers extracted from the pandas codebase,should be compatible with recent pandas versions"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pandas-datareader-0.10.0.tar.gz", hash = "sha256:9fc3c63d39bc0c10c2683f1c6d503ff625020383e38f6cbe14134826b454d5a6"},
+    {file = "pandas_datareader-0.10.0-py3-none-any.whl", hash = "sha256:0b95ff3635bc3ee1a6073521b557ab0e3c39d219f4a3b720b6b0bc6e8cdb4bb7"},
+]
+
+[package.dependencies]
+lxml = "*"
+pandas = ">=0.23"
+requests = ">=2.19.0"
+
+[[package]]
 name = "pandocfilters"
 version = "1.5.1"
 description = "Utilities for writing pandoc filters in python"
@@ -2099,6 +2165,17 @@ files = [
 
 [package.extras]
 diagrams = ["jinja2", "railroad-diagrams"]
+
+[[package]]
+name = "pyprind"
+version = "2.11.3"
+description = "Python Progress Bar and Percent Indicator Utility"
+optional = false
+python-versions = "*"
+files = [
+    {file = "PyPrind-2.11.3-py2.py3-none-any.whl", hash = "sha256:cc8edb66aabb18f25f7a3cce65312b3bc64b49992ddc93ba4cf511e5e25c1be3"},
+    {file = "PyPrind-2.11.3.tar.gz", hash = "sha256:e37dcab6e1a9c8e0a7f0fce65fde7a79e2deda1c75aa015910a49e2137b54cbf"},
+]
 
 [[package]]
 name = "python-dateutil"
@@ -2722,6 +2799,20 @@ pure-eval = "*"
 tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 
 [[package]]
+name = "tabulate"
+version = "0.9.0"
+description = "Pretty-print tabular data"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
+    {file = "tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c"},
+]
+
+[package.extras]
+widechars = ["wcwidth"]
+
+[[package]]
 name = "terminado"
 version = "0.18.0"
 description = "Tornado websocket backend for the Xterm.js Javascript terminal emulator library."
@@ -2954,4 +3045,4 @@ repair = ["scipy (>=1.6.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "cadb6f99d046d5cdd6f194b4fcf1447b17386e85d6336cbd1d45f6a434e0eeff"
+content-hash = "7ba853d4d0043bb815ac01c470ab39aaf9227eb181a136c51cda3d8a31474ee9"

@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 numpy = "^1.26.2"
 pandas = "^2.1.4"
 yfinance = "^0.2.33"
@@ -17,6 +17,8 @@ jupyter = "^1.0.0"
 matplotlib = "^3.8.2"
 scikit-learn = "^1.3.2"
 backtesting = "^0.3.3"
+pyarrow = "^15.0.0"
+bokeh = "2.4.3"
 
 
 [build-system]

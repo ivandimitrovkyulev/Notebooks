@@ -147,3 +147,6 @@ poetry.toml
 
 # Exclude .env file
 .env
+
+# Exclude data files
+*.csv

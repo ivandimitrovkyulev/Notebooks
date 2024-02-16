@@ -29,7 +29,7 @@ def load_data(absolute_filepath: str) -> pd.DataFrame:
 
 def regression_price_chart(data: pd.DataFrame, y_axis: str = 'Close') -> None:
     """
-    Plot
+    Plot specified data with Matplotlib.
     :param data: Stock history DataFrame
     :param y_axis: Which data to plot, eg. 'Close', 'Open'
     """
@@ -37,20 +37,23 @@ def regression_price_chart(data: pd.DataFrame, y_axis: str = 'Close') -> None:
     history = data.reset_index()
 
     # Reshape index column to 2D array for .fit() method
-    X_train = np.array(history.index).reshape(-1, 1)
-    y_train = history[y_axis]
+    time_as_int = np.array(history.index).reshape(-1, 1)
+    data_y = history[y_axis]
 
     # Create LinearRegression Object
     model = LinearRegression()
     # Fit linear model using the train data set
-    model.fit(X_train, y_train)
+    model.fit(time_as_int, data_y)
+    regression_line = model.predict(time_as_int)
+
+    date_col = history['Date']
 
     # Graph
     plt.figure(1, figsize=(16, 10))
     plt.title(f"{y_axis} price Linear Regression")
-    plt.plot(X_train, y_train, label=f'{y_axis} Price')
-    plt.plot(X_train, model.predict(X_train), color='r', label='Linear regression')
-    plt.xlabel('Integer Date')
+    plt.plot(date_col, data_y, label=f'{y_axis} Price')  # Plot data
+    plt.plot(date_col, regression_line, color='r', label='Linear regression')  # Plot Regression line
+    plt.xlabel('Date')
     plt.ylabel(f'{y_axis} Price')
     plt.legend()
     plt.show()

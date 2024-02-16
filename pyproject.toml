@@ -5,6 +5,7 @@ description = "Collection of jupyter notebooks"
 authors = ["Ivan Kyulev"]
 license = "MIT"
 readme = "README.md"
+packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

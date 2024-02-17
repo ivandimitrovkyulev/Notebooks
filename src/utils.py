@@ -27,7 +27,43 @@ def load_data(absolute_filepath: str) -> pd.DataFrame:
     return pd.DataFrame(file)
 
 
-def simple_moving_average(
+def plot_bolinger_bands(
+        data: pd.DataFrame,
+        n_lookback: int,
+        n_std: int,
+        y_axis: str = 'Close',
+        hide_data: bool = False,
+) -> None:
+    """
+    Bollinger bands indicator.
+    :param data:
+    :param n_lookback:
+    :param n_std:
+    """
+    plt.figure(1, figsize=(16, 10))
+    plt.title(f"{y_axis} price")
+    plt.xlabel('Date')
+    plt.ylabel(f'{y_axis} Price')
+
+    time_col = data.index
+    data_y = data[y_axis]
+    if not hide_data:
+        plt.plot(time_col, data_y, label=f'{y_axis} Price')  # Plot data
+
+    hlc3 = (data['High'] + data['Low'] + data['Close']) / 3
+    mean = hlc3.rolling(n_lookback).mean()
+    std = hlc3.rolling(n_lookback).std()
+    upper_band = mean + n_std * std
+    lower_band = mean - n_std * std
+
+    plt.plot(time_col, upper_band, label='Upper Band')
+    plt.plot(time_col, lower_band, label='Lower Band')
+
+    plt.legend()
+    plt.show()
+
+
+def plot_sma(
         data: pd.DataFrame,
         smas: list,
         y_axis: str = 'Close',
@@ -58,7 +94,7 @@ def simple_moving_average(
     plt.show()
 
 
-def regression_price_chart(
+def plot_regression_line(
         data: pd.DataFrame,
         y_axis: str = 'Close',
         reg_line_count: int = 1,

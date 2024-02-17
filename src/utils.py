@@ -31,12 +31,14 @@ def simple_moving_average(
         data: pd.DataFrame,
         smas: list,
         y_axis: str = 'Close',
+        hide_data: bool = False,
 ) -> None:
     """
     Plot Simple Moving Averages.
-    :param data:
-    :param smas:
-    :param y_axis:
+    :param data: Stock history OHLC DataFrame
+    :param smas: List of Simple Moving Averages
+    :param y_axis: Which data to plot, eg. 'Close', 'Open'
+    :param hide_data: Hide data on the chart and leave only SMAs
     """
     plt.figure(1, figsize=(16, 10))
     plt.title(f"{y_axis} price")
@@ -45,7 +47,8 @@ def simple_moving_average(
 
     time_col = data.index
     data_y = data[y_axis]
-    plt.plot(time_col, data_y, label=f'{y_axis} Price')  # Plot data
+    if not hide_data:
+        plt.plot(time_col, data_y, label=f'{y_axis} Price')  # Plot data
 
     for n in smas:
         sma = pd.Series(data_y).rolling(n).mean()
@@ -64,7 +67,7 @@ def regression_price_chart(
     """
     Plot data with Matplotlib and fit 1 overall regression line and n regression lines split into equally sized
     timeframes.
-    :param data: Stock history DataFrame
+    :param data: Stock history OHLC DataFrame
     :param y_axis: Which data to plot, eg. 'Close', 'Open'
     :param reg_line_count: Number of timeframes lines to split and plot. If data has 9 rows and reg_line_count=3, then
         data will be split into [0, 1, 2], [3, 4, 5], [6, 7, 8]

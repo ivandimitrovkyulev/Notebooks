@@ -46,12 +46,16 @@ class SmaCross(Strategy):
 
 class MomentumTimeSeries(Strategy):
     # Define the lookback period
-    lookback = 1
+    lookback = 3
 
     def init(self):
         # Precompute the returns
         self.returns = self.I(daily_log_returns, self.data.Close)
-        self.long_short = self.I(np.sign, np.roll(self.returns, -1))
+        self.long_short = self.I(np.sign, pd.Series(self.returns).rolling(self.lookback).mean())
+
+        # self.long_short = np.roll(self.long_short, 1)
+        # self.long_short[0] = None
+        # self.strategy = self.long_short * self.returns
 
     def next(self):
         if self.long_short > 0:

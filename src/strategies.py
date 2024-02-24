@@ -1,22 +1,11 @@
 import numpy as np
 import pandas as pd
-from backtesting import Strategy
 from backtesting.lib import crossover
-
-
-def daily_log_returns(values):
-    """Calculate log returns for each day."""
-    returns = np.log(values / np.roll(values, 1))
-    returns[0] = None
-    return returns
-
-
-def simple_moving_average(values, n: int):
-    """
-    Return simple moving average of `values`, at
-    each step taking into account `n` previous values.
-    """
-    return pd.Series(values).rolling(n).mean()
+from backtesting import Strategy
+from src.indicators import (
+    simple_moving_average,
+    daily_log_returns,
+)
 
 
 class SmaCross(Strategy):
@@ -52,10 +41,6 @@ class MomentumTimeSeries(Strategy):
         # Precompute the returns
         self.returns = self.I(daily_log_returns, self.data.Close)
         self.long_short = self.I(np.sign, pd.Series(self.returns).rolling(self.lookback).mean())
-
-        # self.long_short = np.roll(self.long_short, 1)
-        # self.long_short[0] = None
-        # self.strategy = self.long_short * self.returns
 
     def next(self):
         if self.long_short > 0:

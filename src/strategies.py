@@ -5,14 +5,15 @@ from backtesting import Strategy
 from src.indicators import (
     simple_moving_average,
     daily_log_returns,
+    substract_values,
+    multiply_values,
 )
 
 
 class SmaCross(Strategy):
-    # Define the two MA lags as *class variables*
-    # for later optimization
-    n1 = 42
-    n2 = 252
+    """Simple moving average with crossover strategy."""
+    n1 = 42  # 1st moving average lag
+    n2 = 252  # 2nd moving average lag
 
     def init(self):
         # Precompute the two moving averages
@@ -20,29 +21,33 @@ class SmaCross(Strategy):
         self.sma2 = self.I(simple_moving_average, self.data.Close, self.n2)
 
     def next(self):
-        # If sma1 crosses above sma2, close any existing
-        # short trades, and buy the asset
+        """
+        If sma1 crosses above sma2, close positions and buy.
+        If sma1 crosses below sma2, close positions and sell.
+        """
         if crossover(self.sma1, self.sma2):
             self.position.close()
             self.buy()
 
-        # Else, if sma1 crosses below sma2, close any existing
-        # long trades, and sell the asset
         elif crossover(self.sma2, self.sma1):
             self.position.close()
             self.sell()
 
 
 class MomentumTimeSeries(Strategy):
-    # Define the lookback period
-    lookback = 3
+    """Momentum time series strategy with variable lookback time period"""
+    lookback = 3  # Define the lookback period
 
     def init(self):
-        # Precompute the returns
+        # Precompute daily log returns
         self.returns = self.I(daily_log_returns, self.data.Close)
         self.long_short = self.I(np.sign, pd.Series(self.returns).rolling(self.lookback).mean())
 
     def next(self):
+        """
+        If the average of last lookback returns > 0, close positions and buy.
+        If the average of last lookback returns < 0, close positions and sell.
+        """
         if self.long_short > 0:
             self.position.close()
             self.buy()
@@ -50,3 +55,23 @@ class MomentumTimeSeries(Strategy):
         elif self.long_short < 0:
             self.position.close()
             self.sell()
+
+
+class MeanReversionLongOnly(Strategy):
+    """Mean reversion long only strategy."""
+    n = 25
+    threshold = 3.5
+
+    def init(self):
+        # Precompute the two moving averages
+        self.returns = self.I(daily_log_returns, self.data.Close)
+        self.sma = self.I(simple_moving_average, self.data.Close, self.n)
+        self.distance = self.I(substract_values, self.data.Close, self.sma)
+        self.distance_change = self.I(multiply_values, self.distance, np.roll(self.distance, 1))
+
+    def next(self):
+        if self.distance < -self.threshold:
+            self.buy()
+
+        elif self.distance > 0:
+            self.position.close()

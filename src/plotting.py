@@ -73,6 +73,31 @@ def plot_sma(
     plt.show()
 
 
+def plot_distance(
+        data: pd.DataFrame,
+        n: int,
+        threshold: int | float,
+        y_axis: str = 'Close',
+):
+    plt.figure(1, figsize=(16, 10))
+    plt.title(f"{y_axis} price")
+    plt.xlabel('Date')
+    plt.ylabel(f'{y_axis} Price')
+
+    time_col = data.index
+    price = data[y_axis]
+    sma = pd.Series(price).rolling(n).mean()
+    distance = price - sma
+
+    plt.axhline(threshold, color='r')
+    plt.axhline(-threshold, color='r')
+    plt.axhline(0, color='r')
+    
+    plt.plot(time_col, distance, label="Distance")
+    plt.legend()
+    plt.show()
+
+
 def plot_regression_line(
         data: pd.DataFrame,
         y_axis: str = 'Close',

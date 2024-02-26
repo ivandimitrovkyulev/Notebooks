@@ -150,3 +150,8 @@ poetry.toml
 
 # Exclude data files
 *.csv
+
+42.py
+43.py
+44.py
+45.py

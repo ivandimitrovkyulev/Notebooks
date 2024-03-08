@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 from sklearn.linear_model import LinearRegression
 
 
@@ -116,9 +117,11 @@ def plot_regression_line(
     :param plot_vertical_line_separation: Plot vertical line to separate regression line splits?
     :param log_scale: Whether to plot Y axis logarithmically
     """
+    data_clean = data[data[y_axis] >= 0]
+    data_clean.dropna()  # Clean data
     plt.figure(1, figsize=(16, 10))
     # Reset index column so that we have integers to represent time for later analysis
-    history = data.reset_index()
+    history = data_clean.reset_index()
     # Fit linear model using the train data set
     model = LinearRegression()
 
@@ -150,5 +153,7 @@ def plot_regression_line(
     plt.plot(time_col, regression_line, color='g', label='Full Regression line')  # Plot Regression line
     plt.xlabel('Date')
     plt.ylabel(f'{y_axis} Price')
+    if log_scale:
+        plt.gca().yaxis.set_major_formatter(FuncFormatter((lambda y, pos: "%.3f"%(np.exp(y)))))
     plt.legend()
     plt.show()

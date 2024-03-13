@@ -1,4 +1,5 @@
 """Plotting functions."""
+from typing import List
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -156,4 +157,35 @@ def plot_regression_line(
     if log_scale:
         plt.gca().yaxis.set_major_formatter(FuncFormatter((lambda y, pos: "%.3f"%(np.exp(y)))))
     plt.legend()
+    plt.show()
+
+
+def plot_n_chart_comparison(
+        charts: List[tuple[str, pd.DataFrame]],
+        y_axis: str = 'Close',
+        log_scale: bool = False,
+)-> None:
+    """
+    Plot a number of normalized charts on the same graph to visualise correlation.
+    :param charts: List of tuples of chart name and chart data
+    :param y_axis: Which data to plot, eg. 'Close', 'Open'
+    :param log_scale: Whether to plot Y axis logarithmically
+    """
+    plt.figure(figsize=(10, 6))
+
+    for name, data in charts:
+        # Normalize the data
+        data_normalized = data[y_axis] / data[y_axis].iloc[0]
+        if log_scale:
+            data_normalized = np.log(data_normalized)
+        # Plotting the normalized data
+        plt.plot(data_normalized, label=name)
+
+    plt.title('Normalized Stock Prices Comparison')
+    plt.xlabel('Date')
+    plt.ylabel('Normalized Price')
+    if log_scale:
+        plt.gca().yaxis.set_major_formatter(FuncFormatter((lambda y, pos: "%.3f"%(np.exp(y)))))
+    plt.legend()
+    plt.grid(True)
     plt.show()

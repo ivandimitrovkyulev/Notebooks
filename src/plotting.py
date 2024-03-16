@@ -205,4 +205,4 @@ def plot_n_chart_comparison(
 
     for corr_data, corr_name in zip(corr_datas, corr_names):
         coefficient = corr_data[0][y_axis].corr(corr_data[1][y_axis])
-        print(f"{corr_name[0]} / {corr_name[1]} correlation: {coefficient:,.8f}")
+        print(f"{corr_name[0]} / {corr_name[1]} correlation:".ljust(26) + f"{coefficient:,.8f}")

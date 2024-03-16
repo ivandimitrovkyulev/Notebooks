@@ -1,6 +1,6 @@
 Notebooks
 ======
-### version v0.2.0
+### version v0.2.1
 
 ------
 A collection of Notebooks for analysing stock charts, correlations, balance sheets, backtesting
@@ -37,4 +37,30 @@ Run `jupyter notebook` and start by looking at some of the scripts in `/sample` 
 
 ```shell
 jupyter notebook
+```
+
+### Example
+
+```python
+import yfinance as yf
+from src.plotting import plot_n_chart_comparison
+
+
+ticker_1 = "GC=F"
+ticker_2 = "^GSPC"
+ticker_3 = "CL=F"
+period = "23y"
+stock_1 = yf.Ticker(ticker_1.upper()).history(period=period).dropna()
+stock_2 = yf.Ticker(ticker_2.upper()).history(period=period).dropna()
+stock_3 = yf.Ticker(ticker_3.upper()).history(period=period).dropna()
+
+plot_n_chart_comparison([(ticker_1, stock_1), (ticker_2, stock_2), (ticker_3, stock_3)], log_scale=True)
+```
+
+Will display the following:
+> ![plot_n_chart_comparison.png](sample%2Fimages%2Fplot_n_chart_comparison.png)
+```text
+GC=F / ^GSPC correlation: 0.74688249
+GC=F / CL=F correlation:  0.50038580
+^GSPC / CL=F correlation: 0.15423993
 ```

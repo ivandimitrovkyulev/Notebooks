@@ -1,5 +1,6 @@
 """Plotting functions."""
 from typing import List
+from itertools import combinations
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -151,13 +152,14 @@ def plot_regression_line(
     regression_line = model.predict(time_as_int)
 
     # Graph
-    plt.title(f"{y_axis} price Linear Regression")
+    title = f"Log {y_axis} price Linear Regression" if log_scale else f"{y_axis} price Linear Regression"
+    plt.title(title)
     plt.plot(time_col, data_y, label=f'{y_axis} Price')  # Plot data
     plt.plot(time_col, regression_line, color='g', label='Full Regression line')  # Plot Regression line
     plt.xlabel('Date')
     plt.ylabel(f'{y_axis} Price')
     if log_scale:
-        plt.gca().yaxis.set_major_formatter(FuncFormatter((lambda y, pos: "%.3f"%(np.exp(y)))))
+        plt.gca().yaxis.set_major_formatter(FuncFormatter((lambda y, pos: "%.3f" % (np.exp(y)))))
     plt.legend()
     plt.show()
 
@@ -167,7 +169,7 @@ def plot_n_chart_comparison(
         y_axis: str = 'Close',
         log_scale: bool = False,
         sma_n: int | None = None,
-)-> None:
+) -> None:
     """
     Plot a number of normalized charts on the same graph to visualise correlation.
     :param charts: List of tuples of chart name and chart data
@@ -187,11 +189,20 @@ def plot_n_chart_comparison(
             data_normalized = simple_moving_average(data_normalized, sma_n)
         plt.plot(data_normalized, label=name)
 
-    plt.title('Normalized Stock Prices Comparison')
+    title = 'Log Normalized Stock Prices Comparison' if log_scale else 'Normalized Stock Prices Comparison'
+    plt.title(title)
     plt.xlabel('Date')
     plt.ylabel('Normalized Price')
     if log_scale:
-        plt.gca().yaxis.set_major_formatter(FuncFormatter((lambda y, pos: "%.3f"%(np.exp(y)))))
+        plt.gca().yaxis.set_major_formatter(FuncFormatter((lambda y, pos: "%.3f" % (np.exp(y)))))
     plt.legend()
     plt.grid(True)
     plt.show()
+
+    # Display correlation pairs
+    corr_names = combinations(map(lambda c: c[0], charts), 2)
+    corr_datas = combinations(map(lambda c: c[1], charts), 2)
+
+    for corr_data, corr_name in zip(corr_datas, corr_names):
+        coefficient = corr_data[0][y_axis].corr(corr_data[1][y_axis])
+        print(f"{corr_name[0]} / {corr_name[1]} correlation: {coefficient:,.8f}")

@@ -194,7 +194,7 @@ def plot_n_chart_comparison(
     :param sma_n: Smooth out graphs as SMAs
     """
     plt.figure(figsize=(10, 6))
-    x_limits = plt.xlim()
+    start_date, end_date = _get_start_end_date(charts[0][1])
 
     for name, data in charts:
         # Normalize the data

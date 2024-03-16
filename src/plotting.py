@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from sklearn.linear_model import LinearRegression
 
+from src.indicators import simple_moving_average
+
 
 def plot_bolinger_bands(
         data: pd.DataFrame,
@@ -164,12 +166,14 @@ def plot_n_chart_comparison(
         charts: List[tuple[str, pd.DataFrame]],
         y_axis: str = 'Close',
         log_scale: bool = False,
+        sma_n: int | None = None,
 )-> None:
     """
     Plot a number of normalized charts on the same graph to visualise correlation.
     :param charts: List of tuples of chart name and chart data
     :param y_axis: Which data to plot, eg. 'Close', 'Open'
     :param log_scale: Whether to plot Y axis logarithmically
+    :param sma_n: Smooth out graphs as SMAs
     """
     plt.figure(figsize=(10, 6))
 
@@ -179,6 +183,8 @@ def plot_n_chart_comparison(
         if log_scale:
             data_normalized = np.log(data_normalized)
         # Plotting the normalized data
+        if sma_n:
+            data_normalized = simple_moving_average(data_normalized, sma_n)
         plt.plot(data_normalized, label=name)
 
     plt.title('Normalized Stock Prices Comparison')

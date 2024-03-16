@@ -84,6 +84,7 @@ try:
     run_subprocess(f"git tag -a {version} HEAD")
     run_subprocess(f"git push origin {version}")
     run_subprocess(f"git push")
+    run_subprocess(f"git status")
 
 except SubprocessReturnError as ex:
     print(ex)

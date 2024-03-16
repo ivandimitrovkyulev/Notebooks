@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "notebooks"
-version = "v0.2.1"
+version = "v0.2.2"
 description = "Collection of jupyter notebooks"
 authors = ["Ivan Kyulev"]
 license = "MIT"

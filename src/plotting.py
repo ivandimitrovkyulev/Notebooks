@@ -10,6 +10,12 @@ from sklearn.linear_model import LinearRegression
 from src.indicators import simple_moving_average
 
 
+def _get_start_end_date(data: pd.DataFrame) -> tuple[str, str]:
+    start_date = data.index[0].date().strftime("%Y/%-m/%-d")
+    end_date = data.index[-1].date().strftime("%Y/%-m/%-d")
+    return start_date, end_date
+
+
 def plot_bolinger_bands(
         data: pd.DataFrame,
         n_lookback: int,
@@ -25,8 +31,9 @@ def plot_bolinger_bands(
     :param y_axis: Which data to plot, eg. 'Close', 'Open'
     :param hide_data: Hide data on the chart
     """
+    start_date, end_date = _get_start_end_date(data)
     plt.figure(1, figsize=(16, 10))
-    plt.title(f"{y_axis} price")
+    plt.title(f"{y_axis} price | {start_date} - {end_date}")
     plt.xlabel('Date')
     plt.ylabel(f'{y_axis} Price')
 
@@ -61,6 +68,8 @@ def plot_sma(
     :param y_axis: Which data to plot, eg. 'Close', 'Open'
     :param hide_data: Hide data on the chart and leave only SMAs
     """
+    start_date, end_date = _get_start_end_date(data)
+
     plt.figure(1, figsize=(16, 10))
     plt.title(f"{y_axis} price")
     plt.xlabel('Date')
@@ -75,6 +84,7 @@ def plot_sma(
         sma = pd.Series(data_y).rolling(n).mean()
         plt.plot(time_col, sma, label=f'{n} SMA')  # Plot SMA
 
+    plt.title(f"SMA | {start_date} - {end_date}")
     plt.legend()
     plt.show()
 
@@ -85,6 +95,8 @@ def plot_distance(
         threshold: int | float,
         y_axis: str = 'Close',
 ):
+    start_date, end_date = _get_start_end_date(data)
+
     plt.figure(1, figsize=(16, 10))
     plt.title(f"{y_axis} price")
     plt.xlabel('Date')
@@ -98,7 +110,8 @@ def plot_distance(
     plt.axhline(threshold, color='r')
     plt.axhline(-threshold, color='r')
     plt.axhline(0, color='r')
-    
+
+    plt.title(f"Distance | {start_date} - {end_date}")
     plt.plot(time_col, distance, label="Distance")
     plt.legend()
     plt.show()
@@ -121,6 +134,8 @@ def plot_regression_line(
     :param plot_vertical_line_separation: Plot vertical line to separate regression line splits?
     :param log_scale: Whether to plot Y axis logarithmically
     """
+    start_date, end_date = _get_start_end_date(data)
+
     data_clean = data[data[y_axis] >= 0]
     data_clean.dropna()  # Clean data
     plt.figure(1, figsize=(16, 10))
@@ -153,6 +168,7 @@ def plot_regression_line(
 
     # Graph
     title = f"Log {y_axis} price Linear Regression" if log_scale else f"{y_axis} price Linear Regression"
+    title += f" | {start_date} - {end_date}"
     plt.title(title)
     plt.plot(time_col, data_y, label=f'{y_axis} Price')  # Plot data
     plt.plot(time_col, regression_line, color='g', label='Full Regression line')  # Plot Regression line
@@ -178,6 +194,7 @@ def plot_n_chart_comparison(
     :param sma_n: Smooth out graphs as SMAs
     """
     plt.figure(figsize=(10, 6))
+    x_limits = plt.xlim()
 
     for name, data in charts:
         # Normalize the data
@@ -190,6 +207,7 @@ def plot_n_chart_comparison(
         plt.plot(data_normalized, label=name)
 
     title = 'Log Normalized Stock Prices Comparison' if log_scale else 'Normalized Stock Prices Comparison'
+    title += f" | {start_date} - {end_date}"
     plt.title(title)
     plt.xlabel('Date')
     plt.ylabel('Normalized Price')

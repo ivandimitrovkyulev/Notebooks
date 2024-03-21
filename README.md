@@ -1,6 +1,6 @@
 Notebooks
 ======
-### version v0.2.7
+### version v0.2.8
 
 ------
 A collection of Notebooks for analysing stock charts, correlations, balance sheets, backtesting
@@ -28,6 +28,12 @@ poetry shell
 
 # Install all project dependencies
 poetry install
+```
+
+Saved the following variables in a `.env` file:
+```dotenv
+FRED_API_KEY=<your-api-key>
+FRED_HOST_URL="https://api.stlouisfed.org/"
 ```
 
 

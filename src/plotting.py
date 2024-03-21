@@ -22,6 +22,7 @@ def plot_bolinger_bands(
         n_std: int,
         y_axis: str = 'Close',
         hide_data: bool = False,
+        figsize: tuple = (16, 10),
 ) -> None:
     """
     Plot Bollinger bands indicator.
@@ -30,9 +31,10 @@ def plot_bolinger_bands(
     :param n_std: Number of standard deviations
     :param y_axis: Which data to plot, eg. 'Close', 'Open'
     :param hide_data: Hide data on the chart
+    :param figsize: Plot figure size
     """
     start_date, end_date = _get_start_end_date(data)
-    plt.figure(1, figsize=(16, 10))
+    plt.figure(1, figsize=figsize)
     plt.title(f"{y_axis} price | {start_date} - {end_date}")
     plt.xlabel('Date')
     plt.ylabel(f'{y_axis} Price')
@@ -60,6 +62,7 @@ def plot_sma(
         smas: list,
         y_axis: str = 'Close',
         hide_data: bool = False,
+        figsize: tuple = (16, 10),
 ) -> None:
     """
     Plot Simple Moving Averages.
@@ -67,10 +70,11 @@ def plot_sma(
     :param smas: List of Simple Moving Averages
     :param y_axis: Which data to plot, eg. 'Close', 'Open'
     :param hide_data: Hide data on the chart and leave only SMAs
+    :param figsize: Plot figure size
     """
     start_date, end_date = _get_start_end_date(data)
 
-    plt.figure(1, figsize=(16, 10))
+    plt.figure(1, figsize=figsize)
     plt.title(f"{y_axis} price")
     plt.xlabel('Date')
     plt.ylabel(f'{y_axis} Price')
@@ -94,10 +98,19 @@ def plot_distance(
         n: int,
         threshold: int | float,
         y_axis: str = 'Close',
-):
+        figsize: tuple = (16, 10),
+) -> None:
+    """
+    Plot distance away from threshold.
+    :param data: Stock history OHLC DataFrame
+    :param n: Number of data points to roll
+    :param threshold: Threshold distance up and down to plot horizontally
+    :param y_axis: Which data to plot, eg. 'Close', 'Open'
+    :param figsize: Plot figure size
+    """
     start_date, end_date = _get_start_end_date(data)
 
-    plt.figure(1, figsize=(16, 10))
+    plt.figure(1, figsize=figsize)
     plt.title(f"{y_axis} price")
     plt.xlabel('Date')
     plt.ylabel(f'{y_axis} Price')
@@ -123,6 +136,7 @@ def plot_regression_line(
         reg_line_count: int = 1,
         plot_vertical_line_separation: bool = True,
         log_scale: bool = False,
+        figsize: tuple = (16, 10),
 ) -> None:
     """
     Plot data with Matplotlib and fit 1 overall regression line and n regression lines split into equally sized
@@ -133,12 +147,13 @@ def plot_regression_line(
         data will be split into [0, 1, 2], [3, 4, 5], [6, 7, 8]
     :param plot_vertical_line_separation: Plot vertical line to separate regression line splits?
     :param log_scale: Whether to plot Y axis logarithmically
+    :param figsize: Plot figure size
     """
     start_date, end_date = _get_start_end_date(data)
 
     data_clean = data[data[y_axis] >= 0]
     data_clean.dropna()  # Clean data
-    plt.figure(1, figsize=(16, 10))
+    plt.figure(1, figsize=figsize)
     # Reset index column so that we have integers to represent time for later analysis
     history = data_clean.reset_index()
     # Fit linear model using the train data set
@@ -185,6 +200,7 @@ def plot_n_chart_comparison(
         y_axis: str = 'Close',
         log_scale: bool = False,
         sma_n: int | None = None,
+        figsize: tuple = (16, 10),
 ) -> None:
     """
     Plot a number of normalized charts on the same graph to visualise correlation.
@@ -192,8 +208,9 @@ def plot_n_chart_comparison(
     :param y_axis: Which data to plot, eg. 'Close', 'Open'
     :param log_scale: Whether to plot Y axis logarithmically
     :param sma_n: Smooth out graphs as SMAs
+    :param figsize: Plot figure size
     """
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=figsize)
     start_date, end_date = _get_start_end_date(charts[0][1])
 
     for name, data in charts:

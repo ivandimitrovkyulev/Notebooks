@@ -52,11 +52,14 @@ def get_series_observation(series_id: str) -> pd.DataFrame:
     :return: Pandas DataFrame
     """
     data = _query_stlouisfed("/fred/series/observations", {'series_id': str(series_id)})
+    y_units = data['units']
 
     df = pd.DataFrame(data['observations'], columns=['date', 'value'])
 
     df['date'] = pd.to_datetime(df['date'])
     df['value'] = pd.to_numeric(df['value'])
+
+    df.rename(columns={'value': y_units}, inplace=True)
     df.set_index('date', inplace=True)
 
     return df

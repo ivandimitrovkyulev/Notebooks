@@ -56,8 +56,9 @@ def get_series_observation(series_id: str) -> pd.DataFrame:
 
     df = pd.DataFrame(data['observations'], columns=['date', 'value'])
 
-    df['date'] = pd.to_datetime(df['date'])
-    df['value'] = pd.to_numeric(df['value'])
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    df['value'] = pd.to_numeric(df['value'], errors='coerce')
+    df.dropna()
 
     df.rename(columns={'value': y_units}, inplace=True)
     df.set_index('date', inplace=True)

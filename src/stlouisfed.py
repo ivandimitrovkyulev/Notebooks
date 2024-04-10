@@ -60,7 +60,7 @@ def get_series_observation(series_id: str) -> pd.DataFrame:
     df['value'] = pd.to_numeric(df['value'], errors='coerce')
     df.dropna()
 
-    df.rename(columns={'value': y_units}, inplace=True)
-    df.set_index('date', inplace=True)
+    df.rename(columns={'value': 'Close', 'date': 'Date'}, inplace=True)
+    df.set_index('Date', inplace=True)
 
     return df

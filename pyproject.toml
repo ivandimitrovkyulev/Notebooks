@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "notebooks"
-version = "v0.2.14"
+version = "v0.2.15"
 description = "Collection of jupyter notebooks"
 authors = ["Ivan Kyulev"]
 license = "MIT"
@@ -22,6 +22,8 @@ pyarrow = "^15.0.0"
 bokeh = "2.4.3"
 backtrader = "^1.9.78.123"
 python-dotenv = "^1.0.1"
+numba = "^0.59.1"
+vectorbt = "^0.26.1"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -1,8 +1,11 @@
 """Plotting functions."""
+from datetime import datetime, timezone
 from typing import List
 from itertools import combinations
+
 import numpy as np
 import pandas as pd
+import yfinance as yf
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from sklearn.linear_model import LinearRegression
@@ -201,7 +204,7 @@ def plot_n_chart_comparison(
         log_scale: bool = False,
         sma_n: int | None = None,
         figsize: tuple = (16, 10),
-) -> None:
+) -> plt:
     """
     Plot a number of normalized charts on the same graph to visualise correlation.
     :param charts: List of tuples of chart name and chart data
@@ -241,3 +244,35 @@ def plot_n_chart_comparison(
     for corr_data, corr_name in zip(corr_datas, corr_names):
         coefficient = corr_data[0][y_axis].corr(corr_data[1][y_axis])
         print(f"{corr_name[0]} / {corr_name[1]} correlation:".ljust(26) + f"{coefficient:,.8f}")
+
+    return plt
+
+
+def compare_assets(
+        tickers: list[str],
+        start_date: tuple[int, int, int],
+        end_date: tuple[int, int, int],
+        log_scale: bool = False,
+) -> plt:
+    """
+    Compare different tickets and plot normalized charts on the same graph to visualise their correlation.
+    :param tickers: List of Tickers
+    :param start_date: Start date of comparison
+    :param end_date: End date of comparison
+    :param log_scale: Whether to plot Y axis logarithmically
+    :return:
+    """
+    start = datetime(*start_date, tzinfo=timezone.utc)
+    end = datetime(*end_date, tzinfo=timezone.utc)
+
+    tickers_history = {}
+    for ticker in tickers:
+        tickers_history[ticker] = yf.Ticker(ticker.upper()).history(period='max').dropna()
+
+    charts = [(ticker, history[start:end]) for ticker, history in tickers_history.items()]
+    plot_n_chart_comparison(
+        charts=charts,
+        log_scale=log_scale,
+    )
+
+    return plt

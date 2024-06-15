@@ -215,10 +215,14 @@ def plot_n_chart_comparison(
     """
     plt.figure(figsize=figsize)
     start_date, end_date = _get_start_end_date(charts[0][1])
+    shortest_chart = min(charts, key=lambda x: len(x[1]))[1]
 
     for name, data in charts:
+        data.index = data.index.tz_convert('America/New_York').normalize()  # Normalize index to NYSE and start of day
+        data_reindexed = data.loc[shortest_chart.index]  # Match all charts indexes to the shortest one
+
         # Normalize the data
-        data_normalized = data[y_axis] / data[y_axis].iloc[0]
+        data_normalized = data_reindexed[y_axis] / data_reindexed[y_axis].iloc[0]
         if log_scale:
             data_normalized = np.log(data_normalized)
         # Plotting the normalized data

@@ -215,20 +215,17 @@ def plot_n_chart_comparison(
     """
     plt.figure(figsize=figsize)
     start_date, end_date = _get_start_end_date(charts[0][1])
-    shortest_chart = min(charts, key=lambda x: len(x[1]))[1]
 
+    # Plot all charts with their individual full data
     for name, data in charts:
-        data.index = data.index.tz_convert('America/New_York').normalize()  # Normalize index to NYSE and start of day
-        data_reindexed = data.loc[shortest_chart.index]  # Match all charts indexes to the shortest one
-
         # Normalize the data
-        data_normalized = data_reindexed[y_axis] / data_reindexed[y_axis].iloc[0]
+        data = data[y_axis] / data[y_axis].iloc[0]
         if log_scale:
-            data_normalized = np.log(data_normalized)
+            data = np.log(data)
         # Plotting the normalized data
         if sma_n:
-            data_normalized = simple_moving_average(data_normalized, sma_n)
-        plt.plot(data_normalized, label=name)
+            data = simple_moving_average(data, sma_n)
+        plt.plot(data, label=name)
 
     title = 'Log Normalized Stock Prices Comparison' if log_scale else 'Normalized Stock Prices Comparison'
     title += f" | {start_date} - {end_date}"
@@ -240,6 +237,12 @@ def plot_n_chart_comparison(
     plt.legend()
     plt.grid(True)
     plt.show()
+
+    all_indexes_cleaned = []
+    for name, data in charts:
+        # Normalize index of all charts to NYSE and start of day
+        data.index = data.index.tz_convert('America/New_York').normalize()
+        all_indexes_cleaned.append(data.index)
 
     # Display correlation pairs
     corr_names = combinations(map(lambda c: c[0], charts), 2)

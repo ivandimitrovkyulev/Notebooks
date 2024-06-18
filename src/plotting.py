@@ -238,19 +238,17 @@ def plot_n_chart_comparison(
     plt.grid(True)
     plt.show()
 
-    all_indexes_cleaned = []
-    for name, data in charts:
+    for _, data in charts:
         # Normalize index of all charts to NYSE and start of day
         data.index = data.index.tz_convert('America/New_York').normalize()
-        all_indexes_cleaned.append(data.index)
 
-    # Display correlation pairs
-    corr_names = combinations(map(lambda c: c[0], charts), 2)
-    corr_datas = combinations(map(lambda c: c[1], charts), 2)
+    # Construct all pair combinations of DataFrames and names
+    names = combinations(map(lambda c: c[0], charts), 2)
+    datas = combinations(map(lambda c: c[1], charts), 2)
 
-    for corr_data, corr_name in zip(corr_datas, corr_names):
-        coefficient = corr_data[0][y_axis].corr(corr_data[1][y_axis])
-        print(f"{corr_name[0]} / {corr_name[1]} correlation:".ljust(26) + f"{coefficient:,.8f}")
+    for data, name in zip(datas, names):
+        coefficient = data[0][y_axis].corr(data[1][y_axis])
+        print(f"{name[0]} / {name[1]} correlation:".ljust(26) + f"{coefficient:,.8f}")
 
     return plt
 
@@ -283,3 +281,34 @@ def compare_assets(
     )
 
     return plt
+
+
+def calculate_resampled_correlations(
+        charts: List[tuple[str, pd.DataFrame]],
+        resample_period: str = "YE",
+        y_axis: str = 'Close',
+) -> None:
+    """
+    Compute the correlations between different assets for each resampling period.
+    :param charts: List of tuples of chart name and chart data
+    :param resample_period: Resampling period, eg. 'YE', '1ME', '3ME', etc
+    :param y_axis: Which data to plot, eg. 'Close', 'Open'
+    """
+    for _, data in charts:
+        # Normalize index of all charts to NYSE and start of day
+        data.index = data.index.tz_convert('America/New_York').normalize()
+
+    # Construct all pair combinations of DataFrames and names
+    names = combinations(map(lambda c: c[0], charts), 2)
+    datas = combinations(map(lambda c: c[1], charts), 2)
+
+    for data, name in zip(datas, names):
+        correlation = data[0][y_axis].corr(data[1][y_axis])
+        print(f"{name[0]} / {name[1]} overall correlation - ".ljust(26) + f"{correlation:,.8f}")
+
+        data_1_resampled = data[0].resample(resample_period)
+        data_2_resampled = data[1].resample(resample_period)
+        for data_1_sample, data_2_sample in zip(data_1_resampled, data_2_resampled):
+            period_date = data_1_sample[0]
+            sample_correlation = data_1_sample[1][y_axis].corr(data_2_sample[1][y_axis])
+            print(period_date, f"{sample_correlation:,.8f}")

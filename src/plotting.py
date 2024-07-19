@@ -13,6 +13,10 @@ from sklearn.linear_model import LinearRegression
 from src.indicators import simple_moving_average
 
 
+FIGSIZE: tuple = (14, 6)
+Y_AXIS: str = 'Close'
+
+
 def _get_start_end_date(data: pd.DataFrame) -> tuple[str, str]:
     start_date = data.index[0].date().strftime("%Y/%-m/%-d")
     end_date = data.index[-1].date().strftime("%Y/%-m/%-d")
@@ -23,9 +27,9 @@ def plot_bolinger_bands(
         data: pd.DataFrame,
         n_lookback: int,
         n_std: int,
-        y_axis: str = 'Close',
+        y_axis: str = Y_AXIS,
         hide_data: bool = False,
-        figsize: tuple = (16, 10),
+        figsize: tuple = FIGSIZE,
 ) -> None:
     """
     Plot Bollinger bands indicator.
@@ -63,10 +67,10 @@ def plot_bolinger_bands(
 def plot_sma(
         data: pd.DataFrame,
         smas: list,
-        y_axis: str = 'Close',
+        y_axis: str = Y_AXIS,
         hide_data: bool = False,
-        figsize: tuple = (16, 10),
-) -> None:
+        figsize: tuple = FIGSIZE,
+) -> plt:
     """
     Plot Simple Moving Averages.
     :param data: Stock history OHLC DataFrame
@@ -75,6 +79,7 @@ def plot_sma(
     :param hide_data: Hide data on the chart and leave only SMAs
     :param figsize: Plot figure size
     """
+    data.dropna(inplace=True)  # Clean data
     start_date, end_date = _get_start_end_date(data)
 
     plt.figure(1, figsize=figsize)
@@ -95,13 +100,15 @@ def plot_sma(
     plt.legend()
     plt.show()
 
+    return plt
+
 
 def plot_distance(
         data: pd.DataFrame,
         n: int,
         threshold: int | float,
-        y_axis: str = 'Close',
-        figsize: tuple = (16, 10),
+        y_axis: str = Y_AXIS,
+        figsize: tuple = FIGSIZE,
 ) -> None:
     """
     Plot distance away from threshold.
@@ -111,6 +118,7 @@ def plot_distance(
     :param y_axis: Which data to plot, eg. 'Close', 'Open'
     :param figsize: Plot figure size
     """
+    data.dropna(inplace=True)  # Clean data
     start_date, end_date = _get_start_end_date(data)
 
     plt.figure(1, figsize=figsize)
@@ -135,12 +143,12 @@ def plot_distance(
 
 def plot_regression_line(
         data: pd.DataFrame,
-        y_axis: str = 'Close',
+        y_axis: str = Y_AXIS,
         reg_line_count: int = 1,
         plot_vertical_line_separation: bool = True,
         log_scale: bool = False,
-        figsize: tuple = (16, 10),
-) -> None:
+        figsize: tuple = FIGSIZE,
+) -> plt:
     """
     Plot data with Matplotlib and fit 1 overall regression line and n regression lines split into equally sized
     timeframes.
@@ -152,7 +160,10 @@ def plot_regression_line(
     :param log_scale: Whether to plot Y axis logarithmically
     :param figsize: Plot figure size
     """
+    data.dropna(inplace=True)  # Clean data
     start_date, end_date = _get_start_end_date(data)
+
+    reg_line_count = 1 if reg_line_count <= 0 else reg_line_count
 
     data_clean = data[data[y_axis] >= 0]
     data_clean.dropna()  # Clean data
@@ -196,14 +207,17 @@ def plot_regression_line(
         plt.gca().yaxis.set_major_formatter(FuncFormatter((lambda y, pos: "%.3f" % (np.exp(y)))))
     plt.legend()
     plt.show()
+    print(f"Coefficient (slope): {model.coef_[0]}")
+    
+    return plt
 
 
 def plot_n_chart_comparison(
         charts: List[tuple[str, pd.DataFrame]],
-        y_axis: str = 'Close',
+        y_axis: str = Y_AXIS,
         log_scale: bool = False,
         sma_n: int | None = None,
-        figsize: tuple = (16, 10),
+        figsize: tuple = FIGSIZE,
 ) -> plt:
     """
     Plot a number of normalized charts on the same graph to visualise correlation.
@@ -218,6 +232,7 @@ def plot_n_chart_comparison(
 
     # Plot all charts with their individual full data
     for name, data in charts:
+        data.dropna(inplace=True)  # Clean data
         # Normalize the data
         data = data[y_axis] / data[y_axis].iloc[0]
         if log_scale:
@@ -240,7 +255,10 @@ def plot_n_chart_comparison(
 
     for _, data in charts:
         # Normalize index of all charts to NYSE and start of day
-        data.index = data.index.tz_convert('America/New_York').normalize()
+        try:
+            data.index = data.index.tz_convert('America/New_York').normalize()
+        except TypeError:
+            data.index = data.index.normalize()
 
     # Construct all pair combinations of DataFrames and names
     names = combinations(map(lambda c: c[0], charts), 2)
@@ -270,9 +288,7 @@ def compare_assets(
     start = datetime(*start_date, tzinfo=timezone.utc)
     end = datetime(*end_date, tzinfo=timezone.utc)
 
-    tickers_history = {}
-    for ticker in tickers:
-        tickers_history[ticker] = yf.Ticker(ticker.upper()).history(period='max').dropna()
+    tickers_history = {ticker: yf.Ticker(ticker.upper()).history(period='max').dropna() for ticker in tickers}
 
     charts = [(ticker, history[start:end]) for ticker, history in tickers_history.items()]
     plot_n_chart_comparison(
@@ -286,7 +302,7 @@ def compare_assets(
 def calculate_resampled_correlations(
         charts: List[tuple[str, pd.DataFrame]],
         resample_period: str = "YE",
-        y_axis: str = 'Close',
+        y_axis: str = Y_AXIS,
 ) -> None:
     """
     Compute the correlations between different assets for each resampling period.

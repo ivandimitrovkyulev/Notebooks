@@ -1,6 +1,6 @@
 Notebooks
 ======
-### version v0.3.3
+### version v0.3.4
 
 ------
 A collection of Notebooks for analysing stock charts, correlations, balance sheets, backtesting
@@ -34,6 +34,7 @@ Saved the following variables in a `.env` file:
 ```dotenv
 FRED_API_KEY=<your-api-key>
 FRED_HOST_URL="https://api.stlouisfed.org/"
+BINANCE_API_KEY=<your-api-key>
 ```
 
 

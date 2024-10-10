@@ -138,10 +138,6 @@ dmypy.json
 # Remove pickled files
 *.pk
 
-# Remove .hex and .elf files in /firmware which are used for programming UUT and RAK chips
-*.hex
-*.elf
-
 # Poetry config specific file
 poetry.toml
 
@@ -151,7 +147,10 @@ poetry.toml
 # Exclude data files
 *.csv
 
+data
+
 42.py
 43.py
 44.py
 45.py
+46.py

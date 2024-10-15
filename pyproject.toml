@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "notebooks"
-version = "v0.3.5"
+version = "v0.3.6"
 description = "Collection of jupyter notebooks"
 authors = ["Ivan Kyulev"]
 license = "MIT"
@@ -26,6 +26,7 @@ numba = "^0.59.1"
 vectorbt = "^0.26.1"
 ta = "^0.11.0"
 binance-historical-data = "^0.1.14"
+scipy = "^1.14.1"
 
 
 [tool.poetry.group.dev.dependencies]

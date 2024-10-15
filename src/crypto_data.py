@@ -1,19 +1,98 @@
-"""Data and utilities for testing."""
 import os
 import datetime
 from typing import Literal
 
+from dotenv import load_dotenv
 import pandas as pd
 from binance_historical_data import BinanceDataDumper
 
 from src.utils import has_header
+from src.rest_client import RestBaseClient
 
+
+# Load env variables
+load_dotenv()
 
 data_freq_type = Literal["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d"]
 
 
-class BinanceDataManager():
+def create_crypto_universe(
+        binance_data: dict,
+        cmc_data: dict,
+        limits: tuple = (10, 300),
+        quote_asset: str = "USDT",
+) -> list:
+    """
+    Creates and returns a list of crypto assets that are available for Perpetual trading on Binance
+    and within specified ranking based on Coin Market Cap.
+    :param binance_exchange_info: Binance  Exchange Info data
+    :param  cryptocurrency_map_data:  CMC Exchange Assets data
+    :param limits: Tuple of upper and lower Market Cap rankings to filter by
+    :param quote_asset: Quote Asset of the perpetual
+    """
+    cmc_rankings = [coin["symbol"] for coin in cmc_data if limits[0] < coin["rank"] <= limits[1]]
 
+    tradeable_assets = []
+    for symbol in binance_data.get("symbols"):
+        if symbol["isMarginTradingAllowed"] and symbol["quoteAsset"] == quote_asset:
+
+            if symbol["baseAsset"] in cmc_rankings:
+                tradeable_assets.append(symbol["symbol"])
+
+    return tradeable_assets
+
+class CMCAPIClient(RestBaseClient):
+    """
+    Class for interacting with Coin Market Cap's APIs.
+    https://coinmarketcap.com/api/documentation/v1/#section/Quick-Start-Guide
+    """
+    def __init__(
+            self,
+            base_endpoint: str = "https://pro-api.coinmarketcap.com",
+            api_token: str = os.getenv("CMC_API_KEY"),
+            api_token_header_name: str = "X-CMC_PRO_API_KEY",
+    ):
+        super().__init__(
+            base_endpoint=base_endpoint,
+            api_token=api_token,
+            api_token_header_name=api_token_header_name,
+        )
+
+    def cryptocurrency_map(self) -> dict:
+        """
+        Returns a mapping of all cryptocurrencies to unique CoinMarketCap ids. Per our Best Practices we recommend
+        utilizing CMC ID instead of cryptocurrency symbols to securely identify cryptocurrencies with our other
+        endpoints and in your own application logic. Each cryptocurrency returned includes typical identifiers
+        such as name, symbol, and token_address for flexible mapping to id.
+        :return:
+        """
+        response = self.get_request(endpoint="/v1/cryptocurrency/map")
+        return response.json().get("data")
+
+
+class BinanceAPIClient(RestBaseClient):
+    """
+    Class for interacting with Binance's APIs.
+    https://binance-docs.github.io/apidocs
+    """
+    def __init__(
+            self,
+            base_endpoint: str = "https://api.binance.com",
+            api_token: str = os.getenv("BINANCE_API_KEY"),
+            api_token_header_name: str = "X-MBX-APIKEY",
+    ):
+        super().__init__(
+            base_endpoint=base_endpoint,
+            api_token=api_token,
+            api_token_header_name=api_token_header_name,
+        )
+
+    def exchange_info(self) -> dict:
+        response = self.get_request(endpoint="/api/v3/exchangeInfo")
+        return response.json()
+
+class BinanceDataManager:
+    """Class for interacting with Binance data."""
     @staticmethod
     def download_data(
             tickers: list,
@@ -80,12 +159,15 @@ class BinanceDataManager():
             else:
                 frame = pd.read_csv(file, index_col=0, parse_dates=True, names=column_names)
             frames.append(frame)
+
+        if not frames:
+            raise ValueError(f"Not files found in {abs_dirpath}")
         # Combine Dataframes into 1 Dataframe
         df = pd.concat(frames)
 
         # Clean data
         df.index = pd.to_datetime(df.index, unit="ms")
-        df = df.drop("close_time", axis=1)
+        df = df.drop(labels=["close_time", "ignore", ], axis=1)
         df.dropna()
         df = df.resample(data_frequency).asfreq()
         df = df.fillna(method="ffill")

@@ -38,6 +38,6 @@ def load_data(abs_filepath: str) -> pd.DataFrame:
         )
 
     except (FileNotFoundError, FileExistsError):
-        raise FileError(f"File '{abs_filepath}' not found. Is file name correct and saved in data/ folder?")
+        raise FileError(f"File '{abs_filepath}' not found. Is file name correct and saved in the right folder?")
 
     return pd.DataFrame(file)

@@ -149,6 +149,9 @@ poetry.toml
 
 data
 
+binance_exchange_info.json
+cmc_coin_rankings.json
+
 42.py
 43.py
 44.py

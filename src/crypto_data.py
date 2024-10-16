@@ -147,15 +147,15 @@ class BinanceDataManager:
         :return: Concatenated Dataframe
         """
         column_names = [
-            'open_time', 'open', 'high', 'low', 'close', 'volume', 'close_time', 'quote_volume', 'count',
-            'taker_buy_volume', 'taker_buy_quote_volume', 'ignore',
+            'Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Close Time', 'Quote Volume', 'Count',
+            'Taker Buy Volume', 'Taker Buy Quote Volume', 'Ignore',
         ]
 
         # Create a DataFrame for each file in provided directory
         frames = []
         for file in [os.path.join(abs_dirpath, file) for file in os.listdir(abs_dirpath)]:
             if has_header(file):
-                frame = pd.read_csv(file, index_col=0, parse_dates=True, )
+                frame = pd.read_csv(file, index_col=0, parse_dates=True, skiprows=1, names=column_names)
             else:
                 frame = pd.read_csv(file, index_col=0, parse_dates=True, names=column_names)
             frames.append(frame)
@@ -167,7 +167,7 @@ class BinanceDataManager:
 
         # Clean data
         df.index = pd.to_datetime(df.index, unit="ms")
-        df = df.drop(labels=["close_time", "ignore", ], axis=1)
+        df = df.drop(labels=["Close Time", "Ignore", ], axis=1)
         df.dropna()
         df = df.resample(data_frequency).asfreq()
         df = df.fillna(method="ffill")

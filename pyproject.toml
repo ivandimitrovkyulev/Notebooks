@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "notebooks"
-version = "v0.3.7"
+version = "v0.3.8"
 description = "Collection of jupyter notebooks"
 authors = ["Ivan Kyulev"]
 license = "MIT"
@@ -10,7 +10,7 @@ packages = [{include = "src"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 numpy = "^1.26.2"
-pandas = "^2.1.4"
+pandas = "^2.2.3"
 yfinance = "^0.2.33"
 notebook = "^7.0.6"
 ipykernel = "^6.27.1"

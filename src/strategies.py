@@ -1,7 +1,10 @@
+from datetime import timedelta
+
 import numpy as np
 import pandas as pd
 from backtesting.lib import crossover
 from backtesting import Strategy
+
 from src.indicators import (
     simple_moving_average,
     daily_log_returns,
@@ -10,10 +13,40 @@ from src.indicators import (
 )
 
 
+class VolumeSpike(Strategy):
+    """Simple Volume Spike strategy. Long only by default."""
+    ma_window = 7  # Volume average lag
+    vol_multiplier = 4  # Volume multiplier
+    hold_period_in_days = 1
+    long_only = True
+
+    def init(self):
+        # Precompute the Volume Spike
+        self.vol_level = self.I(simple_moving_average, self.data.Volume * self.vol_multiplier, self.ma_window)
+
+    def next(self):
+        """
+        If Volume is more than Spiked Volume - buy and then sell the next day.
+        """
+        if self.data.Volume > self.vol_level:
+            self.position.close()
+            self.buy()
+
+
+        elif (
+                self.trades and
+                self.data.index[-1] - self.trades[0].entry_time >= timedelta(days=self.hold_period_in_days)
+        ):
+            self.position.close()
+            if not self.long_only:
+                self.sell()
+
+
 class SmaCross(Strategy):
     """Simple moving average with crossover strategy."""
     n1 = 42  # 1st moving average lag
     n2 = 252  # 2nd moving average lag
+    long_only = True
 
     def init(self):
         # Precompute the two moving averages
@@ -31,12 +64,14 @@ class SmaCross(Strategy):
 
         elif crossover(self.sma2, self.sma1):
             self.position.close()
-            self.sell()
+            if not self.long_only:
+                self.sell()
 
 
 class MomentumTimeSeries(Strategy):
-    """Momentum time series strategy with variable lookback time period"""
+    """Momentum time series strategy with variable lookback time period. Long only by default."""
     lookback = 3  # Define the lookback period
+    long_only = True
 
     def init(self):
         # Precompute daily log returns
@@ -54,13 +89,15 @@ class MomentumTimeSeries(Strategy):
 
         elif self.long_short < 0:
             self.position.close()
-            self.sell()
+            if not self.long_only:
+                self.sell()
 
 
 class MeanReversionLongOnly(Strategy):
-    """Mean reversion long only strategy."""
+    """Mean reversion long only strategy. Long only by default."""
     n = 25
     threshold = 3.5
+    long_only = True
 
     def init(self):
         # Precompute the two moving averages
@@ -75,3 +112,5 @@ class MeanReversionLongOnly(Strategy):
 
         elif self.distance > 0:
             self.position.close()
+            if not self.long_only:
+                self.sell()

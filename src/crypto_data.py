@@ -171,6 +171,7 @@ class BinanceDataManager:
         df.dropna()
         df = df.resample(data_frequency).asfreq()
         df = df.fillna(method="ffill")
+        df.index = df.index.tz_localize('UTC').tz_convert('America/New_York')
         df.sort_index()
 
         return df

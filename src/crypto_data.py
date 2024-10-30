@@ -17,10 +17,10 @@ data_freq_type = Literal["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h",
 
 
 def create_crypto_universe(
-        binance_data: dict,
-        cmc_data: dict,
-        limits: tuple = (10, 300),
-        quote_asset: str = "USDT",
+    binance_data: dict,
+    cmc_data: dict,
+    limits: tuple = (10, 300),
+    quote_asset: str = "USDT",
 ) -> list:
     """
     Creates and returns a list of crypto assets that are available for Perpetual trading on Binance
@@ -41,16 +41,18 @@ def create_crypto_universe(
 
     return tradeable_assets
 
+
 class CMCAPIClient(RestBaseClient):
     """
     Class for interacting with Coin Market Cap's APIs.
     https://coinmarketcap.com/api/documentation/v1/#section/Quick-Start-Guide
     """
+
     def __init__(
-            self,
-            base_endpoint: str = "https://pro-api.coinmarketcap.com",
-            api_token: str = os.getenv("CMC_API_KEY"),
-            api_token_header_name: str = "X-CMC_PRO_API_KEY",
+        self,
+        base_endpoint: str = "https://pro-api.coinmarketcap.com",
+        api_token: str = os.getenv("CMC_API_KEY"),
+        api_token_header_name: str = "X-CMC_PRO_API_KEY",
     ):
         super().__init__(
             base_endpoint=base_endpoint,
@@ -75,11 +77,12 @@ class BinanceAPIClient(RestBaseClient):
     Class for interacting with Binance's APIs.
     https://binance-docs.github.io/apidocs
     """
+
     def __init__(
-            self,
-            base_endpoint: str = "https://api.binance.com",
-            api_token: str = os.getenv("BINANCE_API_KEY"),
-            api_token_header_name: str = "X-MBX-APIKEY",
+        self,
+        base_endpoint: str = "https://api.binance.com",
+        api_token: str = os.getenv("BINANCE_API_KEY"),
+        api_token_header_name: str = "X-MBX-APIKEY",
     ):
         super().__init__(
             base_endpoint=base_endpoint,
@@ -91,20 +94,22 @@ class BinanceAPIClient(RestBaseClient):
         response = self.get_request(endpoint="/api/v3/exchangeInfo")
         return response.json()
 
+
 class BinanceDataManager:
     """Class for interacting with Binance data."""
+
     @staticmethod
     def download_data(
-            tickers: list,
-            path_dir_where_to_dump: str = "./data",
-            asset_class: str = "um",
-            data_type: str = "klines",
-            data_frequency: data_freq_type = "1h",
-            date_start: datetime.date = None,
-            date_end: datetime.date = None,
-            is_to_update_existing: bool = True,
-            int_max_tickers_to_get: int | None = None,
-            tickers_to_exclude: list | None = None,
+        tickers: list,
+        path_dir_where_to_dump: str = "./data",
+        asset_class: str = "um",
+        data_type: str = "klines",
+        data_frequency: data_freq_type = "1h",
+        date_start: datetime.date = None,
+        date_end: datetime.date = None,
+        is_to_update_existing: bool = True,
+        int_max_tickers_to_get: int | None = None,
+        tickers_to_exclude: list | None = None,
     ):
         """
         Download historical data from https://data.binance.vision/ for a given ticker.
@@ -136,8 +141,8 @@ class BinanceDataManager:
 
     @staticmethod
     def data_to_df(
-            abs_dirpath: str,
-            data_frequency: data_freq_type = "1h",
+        abs_dirpath: str,
+        data_frequency: data_freq_type = "1h",
     ) -> pd.DataFrame:
         """
         Given an absolute directory path, create a DataFrame for each file in it and then return a combined DataFrame
@@ -147,8 +152,18 @@ class BinanceDataManager:
         :return: Concatenated Dataframe
         """
         column_names = [
-            'Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Close Time', 'Quote Volume', 'Count',
-            'Taker Buy Volume', 'Taker Buy Quote Volume', 'Ignore',
+            "Date",
+            "Open",
+            "High",
+            "Low",
+            "Close",
+            "Volume",
+            "Close Time",
+            "Quote Volume",
+            "Count",
+            "Taker Buy Volume",
+            "Taker Buy Quote Volume",
+            "Ignore",
         ]
 
         # Create a DataFrame for each file in provided directory
@@ -167,11 +182,17 @@ class BinanceDataManager:
 
         # Clean data
         df.index = pd.to_datetime(df.index, unit="ms")
-        df = df.drop(labels=["Close Time", "Ignore", ], axis=1)
+        df = df.drop(
+            labels=[
+                "Close Time",
+                "Ignore",
+            ],
+            axis=1,
+        )
         df.dropna()
         df = df.resample(data_frequency).asfreq()
         df = df.fillna(method="ffill")
-        df.index = df.index.tz_localize('UTC').tz_convert('America/New_York')
+        df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")
         df.sort_index()
 
         return df

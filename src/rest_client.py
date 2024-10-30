@@ -7,12 +7,7 @@ from requests.adapters import HTTPAdapter
 class RestBaseClient:
     """Class for interacting with REST APIs."""
 
-    def __init__(
-            self,
-            base_endpoint: str,
-            api_token: str,
-            api_token_header_name: str
-    ):
+    def __init__(self, base_endpoint: str, api_token: str, api_token_header_name: str):
         self.base_endpoint = base_endpoint
         if not api_token:
             raise ValueError(

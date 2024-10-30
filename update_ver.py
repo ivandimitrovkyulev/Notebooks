@@ -10,7 +10,7 @@ parser = ArgumentParser(
     usage="./%(prog)s \n",
     formatter_class=RawTextHelpFormatter,
     description="Automatically update repository version across 'pyproject.toml' and 'README.md' files.\n"
-                "The version is then interactively added, commited, tagged and pushed using Git.\n",
+    "The version is then interactively added, commited, tagged and pushed using Git.\n",
 )
 
 
@@ -19,10 +19,10 @@ class SubprocessReturnError(Exception):
 
 
 def run_subprocess(
-        command: str,
-        capture_output: bool = False,
-        print_stdout: bool = False,
-        print_command: bool = False,
+    command: str,
+    capture_output: bool = False,
+    print_stdout: bool = False,
+    print_command: bool = False,
 ) -> str | None:
     """
     Run a command in a subprocess.
@@ -42,9 +42,7 @@ def run_subprocess(
             print(f"Subprocess {command} exited with code: {proc.returncode}\n")
 
         if proc.returncode != 0:
-            raise SubprocessReturnError(
-                f"Command: {' '.join(command)}; stdout: {proc.stdout}; stderror: {proc.stderr}"
-            )
+            raise SubprocessReturnError(f"Command: {' '.join(command)}; stdout: {proc.stdout}; stderror: {proc.stderr}")
 
         if capture_output:
             output = proc.stdout.decode("utf-8").strip()
@@ -67,7 +65,7 @@ try:
     print(f"--> Updated 'pyproject.toml' file to {version}")
 
     # ------------  Update 'README.md' file ---------------------------------------------------------------------------
-    with open(f"README.md", 'r') as file:
+    with open(f"README.md", "r") as file:
         old_text = file.read()
 
     old_version = re.findall(r"### version \S*", old_text)[0]
@@ -76,7 +74,7 @@ try:
         # Replace the all target strings
         new_text = re.sub(old_version, f"### version {version}", old_text)
 
-        with open(f"README.md", 'w') as file:
+        with open(f"README.md", "w") as file:
             file.write(new_text)
             print(f"--> Updated 'README.md' file to {version}")
 

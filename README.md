@@ -1,6 +1,6 @@
 Notebooks
 ======
-### version v0.3.8
+### version v0.3.9
 
 ------
 A collection of Notebooks for analysing stock charts, correlations, balance sheets, backtesting

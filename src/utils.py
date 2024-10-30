@@ -1,4 +1,5 @@
 """Data and utilities for testing."""
+
 import pandas as pd
 
 
@@ -34,7 +35,8 @@ def load_data(abs_filepath: str) -> pd.DataFrame:
     try:
         file = pd.read_csv(
             abs_filepath,
-            index_col=0, parse_dates=True,
+            index_col=0,
+            parse_dates=True,
         )
 
     except (FileNotFoundError, FileExistsError):

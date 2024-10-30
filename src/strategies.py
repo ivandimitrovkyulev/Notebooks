@@ -15,6 +15,7 @@ from src.indicators import (
 
 class VolumeSpike(Strategy):
     """Simple Volume Spike strategy. Long only by default."""
+
     ma_window = 7  # Volume average lag
     vol_multiplier = 4  # Volume multiplier
     hold_period_in_days = 1
@@ -32,10 +33,8 @@ class VolumeSpike(Strategy):
             self.position.close()
             self.buy()
 
-
-        elif (
-                self.trades and
-                self.data.index[-1] - self.trades[0].entry_time >= timedelta(days=self.hold_period_in_days)
+        elif self.trades and self.data.index[-1] - self.trades[0].entry_time >= timedelta(
+            days=self.hold_period_in_days
         ):
             self.position.close()
             if not self.long_only:
@@ -44,6 +43,7 @@ class VolumeSpike(Strategy):
 
 class SmaCross(Strategy):
     """Simple moving average with crossover strategy."""
+
     n1 = 42  # 1st moving average lag
     n2 = 252  # 2nd moving average lag
     long_only = True
@@ -70,6 +70,7 @@ class SmaCross(Strategy):
 
 class MomentumTimeSeries(Strategy):
     """Momentum time series strategy with variable lookback time period. Long only by default."""
+
     lookback = 3  # Define the lookback period
     long_only = True
 
@@ -95,6 +96,7 @@ class MomentumTimeSeries(Strategy):
 
 class MeanReversionLongOnly(Strategy):
     """Mean reversion long only strategy. Long only by default."""
+
     n = 25
     threshold = 3.5
     long_only = True

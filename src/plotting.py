@@ -1,4 +1,5 @@
 """Plotting functions."""
+
 from datetime import datetime, timezone
 from typing import List
 from itertools import combinations
@@ -14,7 +15,7 @@ from src.indicators import simple_moving_average
 
 
 FIGSIZE: tuple = (14, 6)
-Y_AXIS: str = 'Close'
+Y_AXIS: str = "Close"
 
 
 def _get_start_end_date(data: pd.DataFrame) -> tuple[str, str]:
@@ -24,12 +25,12 @@ def _get_start_end_date(data: pd.DataFrame) -> tuple[str, str]:
 
 
 def plot_bolinger_bands(
-        data: pd.DataFrame,
-        n_lookback: int,
-        n_std: int,
-        y_axis: str = Y_AXIS,
-        hide_data: bool = False,
-        figsize: tuple = FIGSIZE,
+    data: pd.DataFrame,
+    n_lookback: int,
+    n_std: int,
+    y_axis: str = Y_AXIS,
+    hide_data: bool = False,
+    figsize: tuple = FIGSIZE,
 ) -> None:
     """
     Plot Bollinger bands indicator.
@@ -43,33 +44,33 @@ def plot_bolinger_bands(
     start_date, end_date = _get_start_end_date(data)
     plt.figure(1, figsize=figsize)
     plt.title(f"{y_axis} price | {start_date} - {end_date}")
-    plt.xlabel('Date')
-    plt.ylabel(f'{y_axis} Price')
+    plt.xlabel("Date")
+    plt.ylabel(f"{y_axis} Price")
 
     time_col = data.index
     data_y = data[y_axis]
     if not hide_data:
-        plt.plot(time_col, data_y, label=f'{y_axis} Price')  # Plot data
+        plt.plot(time_col, data_y, label=f"{y_axis} Price")  # Plot data
 
-    hlc3 = (data['High'] + data['Low'] + data['Close']) / 3
+    hlc3 = (data["High"] + data["Low"] + data["Close"]) / 3
     mean = hlc3.rolling(n_lookback).mean()
     std = hlc3.rolling(n_lookback).std()
     upper_band = mean + n_std * std
     lower_band = mean - n_std * std
 
-    plt.plot(time_col, upper_band, label='Upper Band')
-    plt.plot(time_col, lower_band, label='Lower Band')
+    plt.plot(time_col, upper_band, label="Upper Band")
+    plt.plot(time_col, lower_band, label="Lower Band")
 
     plt.legend()
     plt.show()
 
 
 def plot_sma(
-        data: pd.DataFrame,
-        smas: list,
-        y_axis: str = Y_AXIS,
-        hide_data: bool = False,
-        figsize: tuple = FIGSIZE,
+    data: pd.DataFrame,
+    smas: list,
+    y_axis: str = Y_AXIS,
+    hide_data: bool = False,
+    figsize: tuple = FIGSIZE,
 ) -> plt:
     """
     Plot Simple Moving Averages.
@@ -84,17 +85,17 @@ def plot_sma(
 
     plt.figure(1, figsize=figsize)
     plt.title(f"{y_axis} price")
-    plt.xlabel('Date')
-    plt.ylabel(f'{y_axis} Price')
+    plt.xlabel("Date")
+    plt.ylabel(f"{y_axis} Price")
 
     time_col = data.index
     data_y = data[y_axis]
     if not hide_data:
-        plt.plot(time_col, data_y, label=f'{y_axis} Price')  # Plot data
+        plt.plot(time_col, data_y, label=f"{y_axis} Price")  # Plot data
 
     for n in smas:
         sma = pd.Series(data_y).rolling(n).mean()
-        plt.plot(time_col, sma, label=f'{n} SMA')  # Plot SMA
+        plt.plot(time_col, sma, label=f"{n} SMA")  # Plot SMA
 
     plt.title(f"SMA | {start_date} - {end_date}")
     plt.legend()
@@ -104,11 +105,11 @@ def plot_sma(
 
 
 def plot_distance(
-        data: pd.DataFrame,
-        n: int,
-        threshold: int | float,
-        y_axis: str = Y_AXIS,
-        figsize: tuple = FIGSIZE,
+    data: pd.DataFrame,
+    n: int,
+    threshold: int | float,
+    y_axis: str = Y_AXIS,
+    figsize: tuple = FIGSIZE,
 ) -> None:
     """
     Plot distance away from threshold.
@@ -123,17 +124,17 @@ def plot_distance(
 
     plt.figure(1, figsize=figsize)
     plt.title(f"{y_axis} price")
-    plt.xlabel('Date')
-    plt.ylabel(f'{y_axis} Price')
+    plt.xlabel("Date")
+    plt.ylabel(f"{y_axis} Price")
 
     time_col = data.index
     price = data[y_axis]
     sma = pd.Series(price).rolling(n).mean()
     distance = price - sma
 
-    plt.axhline(threshold, color='r')
-    plt.axhline(-threshold, color='r')
-    plt.axhline(0, color='r')
+    plt.axhline(threshold, color="r")
+    plt.axhline(-threshold, color="r")
+    plt.axhline(0, color="r")
 
     plt.title(f"Distance | {start_date} - {end_date}")
     plt.plot(time_col, distance, label="Distance")
@@ -142,12 +143,12 @@ def plot_distance(
 
 
 def plot_regression_line(
-        data: pd.DataFrame,
-        y_axis: str = Y_AXIS,
-        reg_line_count: int = 1,
-        plot_vertical_line_separation: bool = True,
-        log_scale: bool = False,
-        figsize: tuple = FIGSIZE,
+    data: pd.DataFrame,
+    y_axis: str = Y_AXIS,
+    reg_line_count: int = 1,
+    plot_vertical_line_separation: bool = True,
+    log_scale: bool = False,
+    figsize: tuple = FIGSIZE,
 ) -> plt:
     """
     Plot data with Matplotlib and fit 1 overall regression line and n regression lines split into equally sized
@@ -173,22 +174,22 @@ def plot_regression_line(
     # Fit linear model using the train data set
     model = LinearRegression()
 
-    time_col = history['Date']
+    time_col = history["Date"]
     data_y = np.log(history[y_axis]) if log_scale else history[y_axis]
 
     split_range = int(len(history) / reg_line_count)
-    for split_history in [history[i:i + split_range] for i in range(0, len(history), split_range)]:
+    for split_history in [history[i : i + split_range] for i in range(0, len(history), split_range)]:
         # Reshape index column to 2D array for .fit() method`
         time_as_int = np.array(split_history.index).reshape(-1, 1)
         split_data_y = np.log(split_history[y_axis]) if log_scale else split_history[y_axis]
-        split_time_col = split_history['Date']
+        split_time_col = split_history["Date"]
 
         model.fit(time_as_int, split_data_y)
         regression_line_split = model.predict(time_as_int)
-        plt.plot(split_time_col, regression_line_split, color='r')  # Plot Regression line
+        plt.plot(split_time_col, regression_line_split, color="r")  # Plot Regression line
 
         if plot_vertical_line_separation:
-            plt.axvline(x=split_time_col.iloc[-1], color='y', linestyle='--')  # Plot vertical line
+            plt.axvline(x=split_time_col.iloc[-1], color="y", linestyle="--")  # Plot vertical line
 
     # Reshape index column to 2D array for .fit() method`
     time_as_int = np.array(history.index).reshape(-1, 1)
@@ -199,25 +200,25 @@ def plot_regression_line(
     title = f"Log {y_axis} price Linear Regression" if log_scale else f"{y_axis} price Linear Regression"
     title += f" | {start_date} - {end_date}"
     plt.title(title)
-    plt.plot(time_col, data_y, label=f'{y_axis} Price')  # Plot data
-    plt.plot(time_col, regression_line, color='g', label='Full Regression line')  # Plot Regression line
-    plt.xlabel('Date')
-    plt.ylabel(f'{y_axis} Price')
+    plt.plot(time_col, data_y, label=f"{y_axis} Price")  # Plot data
+    plt.plot(time_col, regression_line, color="g", label="Full Regression line")  # Plot Regression line
+    plt.xlabel("Date")
+    plt.ylabel(f"{y_axis} Price")
     if log_scale:
         plt.gca().yaxis.set_major_formatter(FuncFormatter((lambda y, pos: "%.3f" % (np.exp(y)))))
     plt.legend()
     plt.show()
     print(f"Coefficient (slope): {model.coef_[0]}")
-    
+
     return plt
 
 
 def plot_n_chart_comparison(
-        charts: List[tuple[str, pd.DataFrame]],
-        y_axis: str = Y_AXIS,
-        log_scale: bool = False,
-        sma_n: int | None = None,
-        figsize: tuple = FIGSIZE,
+    charts: List[tuple[str, pd.DataFrame]],
+    y_axis: str = Y_AXIS,
+    log_scale: bool = False,
+    sma_n: int | None = None,
+    figsize: tuple = FIGSIZE,
 ) -> plt:
     """
     Plot a number of normalized charts on the same graph to visualise correlation.
@@ -242,11 +243,11 @@ def plot_n_chart_comparison(
             data = simple_moving_average(data, sma_n)
         plt.plot(data, label=name)
 
-    title = 'Log Normalized Stock Prices Comparison' if log_scale else 'Normalized Stock Prices Comparison'
+    title = "Log Normalized Stock Prices Comparison" if log_scale else "Normalized Stock Prices Comparison"
     title += f" | {start_date} - {end_date}"
     plt.title(title)
-    plt.xlabel('Date')
-    plt.ylabel('Normalized Price')
+    plt.xlabel("Date")
+    plt.ylabel("Normalized Price")
     if log_scale:
         plt.gca().yaxis.set_major_formatter(FuncFormatter((lambda y, pos: "%.3f" % (np.exp(y)))))
     plt.legend()
@@ -256,7 +257,7 @@ def plot_n_chart_comparison(
     for _, data in charts:
         # Normalize index of all charts to NYSE and start of day
         try:
-            data.index = data.index.tz_convert('America/New_York').normalize()
+            data.index = data.index.tz_convert("America/New_York").normalize()
         except TypeError:
             data.index = data.index.normalize()
 
@@ -272,10 +273,10 @@ def plot_n_chart_comparison(
 
 
 def compare_assets(
-        tickers: list[str],
-        start_date: tuple[int, int, int],
-        end_date: tuple[int, int, int],
-        log_scale: bool = False,
+    tickers: list[str],
+    start_date: tuple[int, int, int],
+    end_date: tuple[int, int, int],
+    log_scale: bool = False,
 ) -> plt:
     """
     Compare different tickets and plot normalized charts on the same graph to visualise their correlation.
@@ -288,7 +289,7 @@ def compare_assets(
     start = datetime(*start_date, tzinfo=timezone.utc)
     end = datetime(*end_date, tzinfo=timezone.utc)
 
-    tickers_history = {ticker: yf.Ticker(ticker.upper()).history(period='max').dropna() for ticker in tickers}
+    tickers_history = {ticker: yf.Ticker(ticker.upper()).history(period="max").dropna() for ticker in tickers}
 
     charts = [(ticker, history[start:end]) for ticker, history in tickers_history.items()]
     plot_n_chart_comparison(
@@ -300,9 +301,9 @@ def compare_assets(
 
 
 def calculate_resampled_correlations(
-        charts: List[tuple[str, pd.DataFrame]],
-        resample_period: str = "YE",
-        y_axis: str = Y_AXIS,
+    charts: List[tuple[str, pd.DataFrame]],
+    resample_period: str = "YE",
+    y_axis: str = Y_AXIS,
 ) -> None:
     """
     Compute the correlations between different assets for each resampling period.
@@ -312,7 +313,7 @@ def calculate_resampled_correlations(
     """
     for _, data in charts:
         # Normalize index of all charts to NYSE and start of day
-        data.index = data.index.tz_convert('America/New_York').normalize()
+        data.index = data.index.tz_convert("America/New_York").normalize()
 
     # Construct all pair combinations of DataFrames and names
     names = combinations(map(lambda c: c[0], charts), 2)

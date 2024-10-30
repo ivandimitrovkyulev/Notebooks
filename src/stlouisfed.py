@@ -4,10 +4,10 @@ import pandas as pd
 
 
 def _query_stlouisfed(
-        endpoint: str,
-        params: dict | None = None,
-        host_url: str = os.getenv("FRED_HOST_URL"),
-        timeout: int | float = 10,
+    endpoint: str,
+    params: dict | None = None,
+    host_url: str = os.getenv("FRED_HOST_URL"),
+    timeout: int | float = 10,
 ) -> dict:
     """
     Make a request to 'https://fred.stlouisfed.org'
@@ -23,8 +23,8 @@ def _query_stlouisfed(
         params = {}
     params.update(
         {
-            'file_type': 'json',
-            'api_key': os.getenv('FRED_API_KEY'),
+            "file_type": "json",
+            "api_key": os.getenv("FRED_API_KEY"),
         }
     )
 
@@ -40,9 +40,9 @@ def search_series(search_text: str) -> pd.DataFrame:
     :param search_text: Text to search for.
     :return: Pandas DataFrame
     """
-    data = _query_stlouisfed("/fred/series/search", {'search_text': str(search_text)})
+    data = _query_stlouisfed("/fred/series/search", {"search_text": str(search_text)})
 
-    return pd.DataFrame(data['seriess'])
+    return pd.DataFrame(data["seriess"])
 
 
 def get_series_observation(series_id: str) -> pd.DataFrame:
@@ -51,16 +51,16 @@ def get_series_observation(series_id: str) -> pd.DataFrame:
     :param series_id: The id for a series.
     :return: Pandas DataFrame
     """
-    data = _query_stlouisfed("/fred/series/observations", {'series_id': str(series_id)})
-    y_units = data['units']
+    data = _query_stlouisfed("/fred/series/observations", {"series_id": str(series_id)})
+    y_units = data["units"]
 
-    df = pd.DataFrame(data['observations'], columns=['date', 'value'])
+    df = pd.DataFrame(data["observations"], columns=["date", "value"])
 
-    df['date'] = pd.to_datetime(df['date'], errors='coerce')
-    df['value'] = pd.to_numeric(df['value'], errors='coerce')
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["value"] = pd.to_numeric(df["value"], errors="coerce")
     df.dropna()
 
-    df.rename(columns={'value': 'Close', 'date': 'Date'}, inplace=True)
-    df.set_index('Date', inplace=True)
+    df.rename(columns={"value": "Close", "date": "Date"}, inplace=True)
+    df.set_index("Date", inplace=True)
 
     return df

@@ -2,6 +2,7 @@ from datetime import timedelta
 
 import numpy as np
 import pandas as pd
+from ta.momentum import RSIIndicator
 from backtesting.lib import crossover
 from backtesting import Strategy
 
@@ -11,6 +12,32 @@ from src.indicators import (
     substract_values,
     multiply_values,
 )
+
+
+class RSICross(Strategy):
+    """RSI crossover strategy. Long only by default."""
+
+    low_threshold = 30
+    high_threshold = 80
+    long_only = True
+
+    def init(self):
+        # Precompute RSI
+        self.rsi = self.I(lambda x: RSIIndicator(pd.Series(x)).rsi(), self.data.Close)
+
+    def next(self):
+        """
+        If RSI is below 30 - buy.
+        If RSI is above 70 - sell.
+        """
+        if self.rsi <= self.low_threshold:
+            self.position.close()
+            self.buy()
+
+        elif self.rsi >= self.high_threshold:
+            self.position.close()
+            if not self.long_only:
+                self.sell()
 
 
 class VolumeSpike(Strategy):
@@ -42,7 +69,7 @@ class VolumeSpike(Strategy):
 
 
 class SmaCross(Strategy):
-    """Simple moving average with crossover strategy."""
+    """Simple moving average with crossover strategy. Long only by default."""
 
     n1 = 42  # 1st moving average lag
     n2 = 252  # 2nd moving average lag

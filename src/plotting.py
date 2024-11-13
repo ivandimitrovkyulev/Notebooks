@@ -277,7 +277,7 @@ def compare_assets(
     start_date: tuple[int, int, int],
     end_date: tuple[int, int, int],
     log_scale: bool = False,
-) -> plt:
+) -> list:
     """
     Compare different tickets and plot normalized charts on the same graph to visualise their correlation.
     :param tickers: List of Tickers
@@ -297,7 +297,7 @@ def compare_assets(
         log_scale=log_scale,
     )
 
-    return plt
+    return charts
 
 
 def calculate_resampled_correlations(

@@ -2,16 +2,11 @@ from datetime import timedelta
 
 import numpy as np
 import pandas as pd
-from ta.momentum import RSIIndicator
 from backtesting.lib import crossover
 from backtesting import Strategy
+from ta.momentum import RSIIndicator
 
-from src.indicators import (
-    simple_moving_average,
-    daily_log_returns,
-    substract_values,
-    multiply_values,
-)
+from src import indicators
 
 
 class RSICross(Strategy):
@@ -27,8 +22,8 @@ class RSICross(Strategy):
 
     def next(self):
         """
-        If RSI is below 30 - buy.
-        If RSI is above 70 - sell.
+        If RSI is below low_threshold - buy.
+        If RSI is above high_threshold - sell.
         """
         if self.rsi <= self.low_threshold:
             self.position.close()
@@ -50,7 +45,9 @@ class VolumeSpike(Strategy):
 
     def init(self):
         # Precompute the Volume Spike
-        self.vol_level = self.I(simple_moving_average, self.data.Volume * self.vol_multiplier, self.ma_window)
+        self.vol_level = self.I(
+            indicators.simple_moving_average, self.data.Volume * self.vol_multiplier, self.ma_window
+        )
 
     def next(self):
         """
@@ -77,8 +74,8 @@ class SmaCross(Strategy):
 
     def init(self):
         # Precompute the two moving averages
-        self.sma1 = self.I(simple_moving_average, self.data.Close, self.n1)
-        self.sma2 = self.I(simple_moving_average, self.data.Close, self.n2)
+        self.sma1 = self.I(indicators.simple_moving_average, self.data.Close, self.n1)
+        self.sma2 = self.I(indicators.simple_moving_average, self.data.Close, self.n2)
 
     def next(self):
         """
@@ -103,7 +100,7 @@ class MomentumTimeSeries(Strategy):
 
     def init(self):
         # Precompute daily log returns
-        self.returns = self.I(daily_log_returns, self.data.Close)
+        self.returns = self.I(indicators.daily_log_returns, self.data.Close)
         self.long_short = self.I(np.sign, pd.Series(self.returns).rolling(self.lookback).mean())
 
     def next(self):
@@ -130,10 +127,10 @@ class MeanReversionLongOnly(Strategy):
 
     def init(self):
         # Precompute the two moving averages
-        self.returns = self.I(daily_log_returns, self.data.Close)
-        self.sma = self.I(simple_moving_average, self.data.Close, self.n)
-        self.distance = self.I(substract_values, self.data.Close, self.sma)
-        self.distance_change = self.I(multiply_values, self.distance, np.roll(self.distance, 1))
+        self.returns = self.I(indicators.daily_log_returns, self.data.Close)
+        self.sma = self.I(indicators.simple_moving_average, self.data.Close, self.n)
+        self.distance = self.I(indicators.substract_values, self.data.Close, self.sma)
+        self.distance_change = self.I(indicators.multiply_values, self.distance, np.roll(self.distance, 1))
 
     def next(self):
         if self.distance < -self.threshold:

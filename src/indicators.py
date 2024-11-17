@@ -24,6 +24,23 @@ def daily_log_returns(values: Any) -> np.ndarray:
     return returns
 
 
+def z_score(df_1: pd.DataFrame, df_2: pd.DataFrame, lookback: int = 25, column: str = "Close") -> pd.Series:
+    """Calculate the Z Score between 2"""
+    spread = df_1[column] - df_2[column]
+    spread.dropna(inplace=True)
+
+    mean_spread = spread.rolling(window=lookback).mean()
+    std_spread = spread.rolling(window=lookback).std()
+
+    # Calculate Z-Score
+    z_score = (spread - mean_spread) / std_spread
+
+    # Drop rows with NaN values (due to rolling calculations)
+    z_score.dropna(inplace=True)
+
+    return z_score
+
+
 def simple_moving_average(values: Any, n: int) -> pd.Series:
     """
     Return simple moving average of `values`, at

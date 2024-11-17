@@ -91,4 +91,7 @@ class TestStrategy(bt.Strategy):
                 self.order = self.sell()
 
     def stop(self):
-        self.log("(MA Period %2d) Ending Value %.2f" % (self.params.maperiod, self.broker.getvalue()), doprint=True)
+        self.log(
+            "(MA Period %2d) Ending Value %.2f" % (self.params.maperiod, self.broker.getvalue()),
+            doprint=True,
+        )

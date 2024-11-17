@@ -46,7 +46,9 @@ class VolumeSpike(Strategy):
     def init(self):
         # Precompute the Volume Spike
         self.vol_level = self.I(
-            indicators.simple_moving_average, self.data.Volume * self.vol_multiplier, self.ma_window
+            indicators.simple_moving_average,
+            self.data.Volume * self.vol_multiplier,
+            self.ma_window,
         )
 
     def next(self):

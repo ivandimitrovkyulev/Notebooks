@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "notebooks"
-version = "v0.4.0"
+version = "v0.4.1"
 description = "Collection of jupyter notebooks"
 authors = ["Ivan Kyulev"]
 license = "MIT"
@@ -31,7 +31,7 @@ stumpy = "^1.13.0"
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.2.0"
+black = {extras = ["jupyter"], version = "^24.10.0"}
 
 [build-system]
 requires = ["poetry-core"]

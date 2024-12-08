@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "notebooks"
-version = "v0.4.2"
+version = "v0.4.3"
 description = "Collection of jupyter notebooks"
 authors = ["Ivan Kyulev"]
 license = "MIT"
@@ -34,6 +34,13 @@ ipython = "^8.29.0"
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^24.10.0"}
 isort = "^5.13.2"
+
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+line_length = 120
 
 [build-system]
 requires = ["poetry-core"]

@@ -4,9 +4,9 @@ import numpy as np
 
 class ZScoreStrategy(bt.Strategy):
     params = (
-        ('lookback', 20),  # Lookback period for calculating Z-score
-        ('zscore_entry', 2),  # Z-score threshold for entry
-        ('zscore_exit', 0.5),  # Z-score threshold for exit
+        ("lookback", 20),  # Lookback period for calculating Z-score
+        ("zscore_entry", 2),  # Z-score threshold for entry
+        ("zscore_exit", 0.5),  # Z-score threshold for exit
     )
 
     def __init__(self):
@@ -37,12 +37,20 @@ class ZScoreStrategy(bt.Strategy):
         print(f"Date: {self.data.datetime.date(0)}, Z-score: {self.zscore}")
 
         # Entry conditions
-        if self.zscore >= self.params.zscore_entry and not self.getposition(self.data1) and not self.getposition(self.data2):
+        if (
+            self.zscore >= self.params.zscore_entry
+            and not self.getposition(self.data1)
+            and not self.getposition(self.data2)
+        ):
             # Long Asset 2, Short Asset 1
             self.sell(data=self.data1, size=100)  # Short Asset 1
             self.buy(data=self.data2, size=100)  # Long Asset 2
 
-        elif self.zscore <= -self.params.zscore_entry and not self.getposition(self.data1) and not self.getposition(self.data2):
+        elif (
+            self.zscore <= -self.params.zscore_entry
+            and not self.getposition(self.data1)
+            and not self.getposition(self.data2)
+        ):
             # Long Asset 1, Short Asset 2
             self.buy(data=self.data1, size=100)  # Long Asset 1
             self.sell(data=self.data2, size=100)  # Short Asset 2
@@ -56,10 +64,7 @@ class ZScoreStrategy(bt.Strategy):
 
 class SmaCross(bt.Strategy):
     # list of parameters which are configurable for the strategy
-    params = dict(
-        pfast=10,  # period for the fast moving average
-        pslow=30   # period for the slow moving average
-    )
+    params = dict(pfast=10, pslow=30)  # period for the fast moving average  # period for the slow moving average
 
     def __init__(self):
         sma1 = bt.ind.SMA(period=self.p.pfast)  # fast moving average

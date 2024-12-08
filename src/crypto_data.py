@@ -1,14 +1,13 @@
-import os
 import datetime
+import os
 from typing import Literal
 
-from dotenv import load_dotenv
 import pandas as pd
 from binance_historical_data import BinanceDataDumper
+from dotenv import load_dotenv
 
-from src.utils import has_header
 from src.rest_client import RestBaseClient
-
+from src.utils import has_header
 
 # Load env variables
 load_dotenv()

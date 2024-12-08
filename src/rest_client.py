@@ -1,7 +1,6 @@
-from urllib3 import Retry
-
 import requests
 from requests.adapters import HTTPAdapter
+from urllib3 import Retry
 
 
 class RestBaseClient:

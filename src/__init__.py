@@ -1,7 +1,7 @@
-import dotenv
 import tomllib
 from pathlib import Path
 
+import dotenv
 
 # Load all env variables
 dotenv.load_dotenv()

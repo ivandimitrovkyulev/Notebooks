@@ -1,18 +1,17 @@
 """Plotting functions."""
 
 from datetime import datetime, timezone
-from typing import List
 from itertools import combinations
+from typing import List
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import yfinance as yf
-import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from sklearn.linear_model import LinearRegression
 
 from src.indicators import simple_moving_average
-
 
 FIGSIZE: tuple = (14, 6)
 Y_AXIS: str = "Close"

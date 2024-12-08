@@ -1,6 +1,7 @@
 import operator
 from functools import reduce
 from typing import Any
+
 import numpy as np
 import pandas as pd
 
@@ -25,7 +26,7 @@ def daily_log_returns(values: Any) -> np.ndarray:
 
 
 def z_score(df_1: pd.DataFrame, df_2: pd.DataFrame, lookback: int = 25, column: str = "Close") -> pd.Series:
-    """Calculate the Z Score between 2"""
+    """Calculate the Z Score between 2 assets."""
     spread = df_1[column] - df_2[column]
     spread.dropna(inplace=True)
 

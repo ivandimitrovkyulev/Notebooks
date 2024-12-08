@@ -1,4 +1,78 @@
 import backtrader as bt
+import numpy as np
+
+
+class ZScoreStrategy(bt.Strategy):
+    params = (
+        ('lookback', 20),  # Lookback period for calculating Z-score
+        ('zscore_entry', 2),  # Z-score threshold for entry
+        ('zscore_exit', 0.5),  # Z-score threshold for exit
+    )
+
+    def __init__(self):
+        # Keep references to the two data feeds
+        self.data1 = self.datas[0]
+        self.data2 = self.datas[1]
+
+        # Spread and Z-score variables
+        self.spread = None
+        self.zscore = None
+
+    def next(self):
+        # Ensure there are enough bars for the lookback period
+        if len(self.data1) < self.params.lookback or len(self.data2) < self.params.lookback:
+            return
+
+        # Calculate the spread
+        prices1 = np.array([self.data1.close[i] for i in range(-self.params.lookback, 0)])
+        prices2 = np.array([self.data2.close[i] for i in range(-self.params.lookback, 0)])
+        spread = prices1 - prices2
+
+        # Calculate Z-score
+        spread_mean = np.mean(spread)
+        spread_std = np.std(spread)
+        self.zscore = (spread[-1] - spread_mean) / spread_std
+
+        # Logging (optional)
+        print(f"Date: {self.data.datetime.date(0)}, Z-score: {self.zscore}")
+
+        # Entry conditions
+        if self.zscore >= self.params.zscore_entry and not self.getposition(self.data1) and not self.getposition(self.data2):
+            # Long Asset 2, Short Asset 1
+            self.sell(data=self.data1, size=100)  # Short Asset 1
+            self.buy(data=self.data2, size=100)  # Long Asset 2
+
+        elif self.zscore <= -self.params.zscore_entry and not self.getposition(self.data1) and not self.getposition(self.data2):
+            # Long Asset 1, Short Asset 2
+            self.buy(data=self.data1, size=100)  # Long Asset 1
+            self.sell(data=self.data2, size=100)  # Short Asset 2
+
+        # Exit conditions
+        elif abs(self.zscore) <= self.params.zscore_exit:
+            # Close positions when Z-score returns to normal range
+            self.close(data=self.data1)
+            self.close(data=self.data2)
+
+
+class SmaCross(bt.Strategy):
+    # list of parameters which are configurable for the strategy
+    params = dict(
+        pfast=10,  # period for the fast moving average
+        pslow=30   # period for the slow moving average
+    )
+
+    def __init__(self):
+        sma1 = bt.ind.SMA(period=self.p.pfast)  # fast moving average
+        sma2 = bt.ind.SMA(period=self.p.pslow)  # slow moving average
+        self.crossover = bt.ind.CrossOver(sma1, sma2)  # crossover signal
+
+    def next(self):
+        if not self.position:  # not in the market
+            if self.crossover > 0:  # if fast crosses slow to the upside
+                self.buy()  # enter long
+
+        elif self.crossover < 0:  # in the market & cross to the downside
+            self.close()  # close long position
 
 
 class TestStrategy(bt.Strategy):

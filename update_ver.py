@@ -1,10 +1,9 @@
 #! /usr/bin/env python3
 import re
-import sys
 import shlex
 import subprocess
+import sys
 from argparse import ArgumentParser, RawTextHelpFormatter
-
 
 parser = ArgumentParser(
     usage="./%(prog)s \n",

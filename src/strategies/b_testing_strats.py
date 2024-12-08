@@ -2,8 +2,8 @@ from datetime import timedelta
 
 import numpy as np
 import pandas as pd
-from backtesting.lib import crossover
 from backtesting import Strategy
+from backtesting.lib import crossover
 from ta.momentum import RSIIndicator
 
 from src import indicators

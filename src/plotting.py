@@ -70,6 +70,7 @@ def plot_sma(
     y_axis: str = Y_AXIS,
     hide_data: bool = False,
     figsize: tuple = FIGSIZE,
+    log_scale: bool = False,
 ) -> plt:
     """
     Plot Simple Moving Averages.
@@ -88,7 +89,7 @@ def plot_sma(
     plt.ylabel(f"{y_axis} Price")
 
     time_col = data.index
-    data_y = data[y_axis]
+    data_y = np.log(data[y_axis]) if log_scale else data[y_axis]
     if not hide_data:
         plt.plot(time_col, data_y, label=f"{y_axis} Price")  # Plot data
 

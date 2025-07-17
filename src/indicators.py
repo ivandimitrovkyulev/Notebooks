@@ -42,6 +42,17 @@ def z_score(df_1: pd.DataFrame, df_2: pd.DataFrame, lookback: int = 25, column: 
     return z_score
 
 
+def recent_all_time_high(values: Any, window: int) -> pd.Series:
+    """
+    Returns a boolean if last price was >= than the Local High in the specified period.
+    :param values: Pandas Series of values
+    :param window: The lookback window period to get the Local High
+    :return: Pandas Series of boolean values
+    """
+    recent_strength = pd.Series(values).rolling(window).max()
+    return pd.Series(values >= recent_strength)
+
+
 def simple_moving_average(values: Any, n: int) -> pd.Series:
     """
     Return simple moving average of `values`, at

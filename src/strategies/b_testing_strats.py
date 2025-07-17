@@ -35,6 +35,62 @@ class RSICross(Strategy):
                 self.sell()
 
 
+class DCA(Strategy):
+    """Simple Dollar Cost Averaging Strategy"""
+
+    buy_frequency_days = 30
+
+    def init(self):
+        # Calculate the amount per trade (fixed cash amount)
+        no_trades = len(self.data.Close) / self.buy_frequency_days  # Number of trades
+        amount_per_trade = self._broker._cash / no_trades  # Cash per trade
+        self.percentage_trade = amount_per_trade / self._broker._cash
+
+        print(no_trades)
+        print(amount_per_trade)
+        print(self.percentage_trade)
+
+        # Store the last buy time (None at the beginning)
+        self.last_buy_time = None
+
+    def next(self):
+        # Get the current time from the data index
+        current_time = self.data.index[-1]
+
+        # Buy if it's the first trade or enough days have passed
+        if self.last_buy_time is None or (current_time - self.trades[0].entry_time >= timedelta(days=self.buy_frequency_days)):
+            self.buy(size=self.percentage_trade)
+            self.last_buy_time = current_time  # Update last buy time
+            print(f"BOUGHT {self.percentage_trade} units at {self.data.Close[-1]} on {current_time}")
+
+
+class PriceStrength(Strategy):
+    """Simple Price Strength strategy. Long only by default."""
+    lookback_period_days = 5
+    hold_period_in_days = 2
+
+    def init(self):
+        # Precompute the Price Strength
+        self.price_strength = self.I(
+            indicators.recent_all_time_high,
+            self.data.Close,
+            self.lookback_period_days,
+        )
+
+    def next(self):
+        """
+        If last Price is >= than the lookback window's max Price - buy and then sell after 'hold_period_days' days.
+        """
+        if self.price_strength:
+            if not self.position.is_long:
+                self.buy()
+
+        elif self.trades and self.data.index[-1] - self.trades[0].entry_time >= timedelta(
+            days=self.hold_period_in_days
+        ):
+            self.position.close()
+
+
 class VolumeSpike(Strategy):
     """Simple Volume Spike strategy. Long only by default."""
 

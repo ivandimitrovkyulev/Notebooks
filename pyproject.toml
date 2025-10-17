@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "notebooks"
-version = "v0.4.6"
+version = "v0.4.7"
 description = "Collection of jupyter notebooks"
 authors = ["Ivan Kyulev"]
 license = "MIT"
@@ -30,11 +30,13 @@ ipympl = "^0.9.4"
 backtrader = {extras = ["plotting"], version = "^1.9.78.123"}
 ipython = "^8.29.0"
 hyperliquid-python-sdk = "^0.9.0"
+statsmodels = "^0.14.5"
 
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^24.10.0"}
 isort = "^5.13.2"
+mypy = "^1.18.2"
 
 
 [tool.black]
